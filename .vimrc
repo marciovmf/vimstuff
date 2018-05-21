@@ -8,7 +8,7 @@
 let $VIMHOME = $HOME."/.vim"
 let $SWAPDIR = $VIMHOME."/swap//"
 
-" VIMPLUG
+" Pluggins 
 call plug#begin('~/.vim/plugged')
 "	Plug 'vim-airline/vim-airline'
 	Plug 'Shougo/unite.vim'
@@ -348,10 +348,11 @@ autocmd FileType qf wincmd J | :set wrap
 " Hide division line no matter the colorscheme 
 autocmd ColorScheme * call OnThemeReload()
 
-function OnThemeReload()
+function! OnThemeReload()
 	highlight VertSplit guibg=bg guifg=bg
 	set fillchars+=vert:\ 
 endfunction
+
 
 "try loading a color scheme if it exists
 "let expected_theme="coffee"
