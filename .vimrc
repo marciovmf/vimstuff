@@ -107,7 +107,6 @@ set hidden									"Hide abandoned buffers
 set clipboard=unnamed				" Use the OS clipboard for copying/pasting
 set wildcharm=<tab>					" so we can use it to activate wildmenu from commands
 set scrolloff=10						" begin scrolling n lines before bottom/top of screen
-set inccommand=nosplit				" live preview of incremental commands
 " OmniCppComplete
 " reference http://vim.wikia.com/wiki/C%2B%2B_code_completion
 let OmniCpp_NamespaceSearch = 1
@@ -174,9 +173,14 @@ set foldtext=FoldText()
 set vi=%,'50 
 set vi+=\"100,:100 
 if !has('nvim')
-  set ttymouse=xterm2
+"  set ttymouse=xterm2
 "	set viminfo+=n~/vim/viminfo
 	set vi+=n~/.viminfo
+endif
+
+" NeoVIM specifics
+if has('nvim')
+	set inccommand=nosplit				" live preview of incremental commands
 endif
 
 " PARENTHESIS/BRACES/BRACKETS COMPLETION HANDLING
