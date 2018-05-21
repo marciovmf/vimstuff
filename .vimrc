@@ -181,6 +181,8 @@ endif
 " NeoVIM specifics
 if has('nvim')
 	set inccommand=nosplit				" live preview of incremental commands
+  tnoremap <Esc> <C-\><C-n> "ESC exits terminal mode
+  tnoremap <M-[> <Esc>      "ALT+ESC sends esc to terminal applicaton
 endif
 
 " PARENTHESIS/BRACES/BRACKETS COMPLETION HANDLING
