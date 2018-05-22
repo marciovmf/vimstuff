@@ -3,46 +3,63 @@
 " https://gist.github.com/marciovmf/1b7b7371ba1f7137e94eccb528b3206e   "
 " useful resources:
 " http://ricostacruz.com/cheatsheets/vimscript
+" NOTE: if running neovim, set init.vim as follows:
+" set runtimepath+=~/vimfiles,~/vimfiles/after
+" set packpath+=~/.vim
+" source ~/.vimrc
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
 let $VIMHOME = $HOME."/.vim"
 let $SWAPDIR = $VIMHOME."/swap//"
 
-" Pluggins 
-call plug#begin('~/.vim/plugged')
-"	Plug 'vim-airline/vim-airline'
-	Plug 'Shougo/unite.vim'
-	Plug 'Shougo/vimfiler.vim'
-	Plug 'vim-scripts/OmniCppComplete'
-	Plug 'majutsushi/tagbar'
-	"Plug 'kien/ctrlp.vim'
-	Plug 'ryanoasis/vim-devicons'
-	Plug 'vim-airline/vim-airline-themes'
-	Plug 'moll/vim-bbye'
-	Plug 'yuttie/comfortable-motion.vim' "for better scrolling
-	" Snipmat and dependencies
-  Plug 'MarcWeber/vim-addon-mw-utils'
-  Plug 'tomtom/tlib_vim'
-  Plug 'garbas/vim-snipmate'
-  Plug 'honza/vim-snippets'
+augroup vimrc
+	autocmd!
+	autocmd BufEnter .vimrc set foldmethod=marker foldcolumn=3
+	autocmd BufEnter .vimrc normal! zM
+augroup END
 
+
+" PLUGINS {{{
+call plug#begin('~/.vim/plugged')
+"Plug 'vim-airline/vim-airline'
+"Plug 'kien/ctrlp.vim'
+Plug 'Shougo/unite.vim'
+Plug 'Shougo/vimfiler.vim'
+Plug 'vim-scripts/OmniCppComplete'
+Plug 'majutsushi/tagbar'
+Plug 'ryanoasis/vim-devicons'
+Plug 'vim-airline/vim-airline-themes'
+Plug 'moll/vim-bbye'
+Plug 'yuttie/comfortable-motion.vim' "for better scrolling
+" Snipmat and dependencies
+Plug 'MarcWeber/vim-addon-mw-utils'
+Plug 'tomtom/tlib_vim'
+Plug 'garbas/vim-snipmate'
+Plug 'honza/vim-snippets'
 call plug#end()
 
-" normal mode from insert mode with kk
-inoremap kk <esc>
-inoremap jj <esc>
-nnoremap ; :
-
-let g:autotagTagsFile="tags"
 "let vimfiler replace netrw
 let g:vimfiler_as_default_explorer = 1
 
-" Airline settings
-" air-line
+" OmniCppComplete {{{2
+" reference http://vim.wikia.com/wiki/C%2B%2B_code_completion
+let OmniCpp_NamespaceSearch = 1
+let OmniCpp_GlobalScopeSearch = 1
+let OmniCpp_ShowAccess = 1
+let OmniCpp_ShowPrototypeInAbbr = 1 " show function parameters
+let OmniCpp_MayCompleteDot = 1 " autocomplete after .
+let OmniCpp_MayCompleteArrow = 1 " autocomplete after ->
+let OmniCpp_MayCompleteScope = 1 " autocomplete after ::
+let OmniCpp_DefaultNamespaces = ["std", "_GLIBCXX_STD"]
+" automatically open and close the popup menu / preview window
+au CursorMovedI,InsertLeave * if pumvisible() == 0|silent! pclose|endif
+set completeopt=menuone,menu,longest,preview
+
+" AIRLINE {{{2
+let g:airline_theme='minimalist'
 let g:airline_powerline_fonts = 1
 
 if !exists('g:airline_symbols')
-    let g:airline_symbols = {}
+	let g:airline_symbols = {}
 endif
 
 let g:comfortable_motion_scroll_down_key = "j"
@@ -73,10 +90,10 @@ let g:airline_symbols.branch = ''
 let g:airline_symbols.readonly = ''
 let g:airline_symbols.linenr = ''
 
-"
 set directory=$SWAPDIR
 
-"MISC SETTINGS:
+
+" MISC SETTINGS: {{{1
 syntax on
 filetype plugin on
 filetype indent on
@@ -94,121 +111,32 @@ set equalalways							"All windows should have the same size
 set switchbuf=useopen				"use existing window for som type of buffers
 set laststatus=2						"Always show status bar
 set backspace=2							"backspace goes to end of previous line if current is empty
+set shortmess=at						"Short messages
 set showmatch								"highlight matching brackets
 set belloff=all							"set visualbell
-set tw=120										"soft colun nu
+set tw=120									"soft colun nu
 set showcmd									"Show input of an incomplete command
 set completeopt=longest,menuone	"Insert mmac_classicode completion tweaks
 set hid 										"Allow vim to hide buffers even though they contain modifications
 set path+=** 								"Search down subfolders
-"set wildmode=list:longest,list:full	" Provides tab-completion for all file-related tasks
 set wildmode=list:list,full	" Provides tab-completion for all file-related tasks
 set hidden									"Hide abandoned buffers
 set clipboard=unnamed				" Use the OS clipboard for copying/pasting
 set wildcharm=<tab>					" so we can use it to activate wildmenu from commands
 set scrolloff=10						" begin scrolling n lines before bottom/top of screen
-" OmniCppComplete
-" reference http://vim.wikia.com/wiki/C%2B%2B_code_completion
-let OmniCpp_NamespaceSearch = 1
-let OmniCpp_GlobalScopeSearch = 1
-let OmniCpp_ShowAccess = 1
-let OmniCpp_ShowPrototypeInAbbr = 1 " show function parameters
-let OmniCpp_MayCompleteDot = 1 " autocomplete after .
-let OmniCpp_MayCompleteArrow = 1 " autocomplete after ->
-let OmniCpp_MayCompleteScope = 1 " autocomplete after ::
-let OmniCpp_DefaultNamespaces = ["std", "_GLIBCXX_STD"]
-" automatically open and close the popup menu / preview window
-au CursorMovedI,InsertLeave * if pumvisible() == 0|silent! pclose|endif
-set completeopt=menuone,menu,longest,preview
-
-
-" INDENTING:
+" FORMATTING
 set tabstop=2
 set shiftwidth=2
 set autoindent
 set smartindent
 set cindent
-
-" FOLDING:
-" https://coderwall.com/p/usd_cw/a-pretty-vim-foldtext-function
-set foldmethod=syntax
-set foldlevelstart=99
-"set fillchars=fold:\  
-
-set foldtext=FoldText()
-  function! FoldText()
-    let l:lpadding = &fdc
-    redir => l:signs
-      execute 'silent sign place buffer='.bufnr('%')
-    redir End
-    let l:lpadding += l:signs =~ 'id=' ? 2 : 0
-
-    if exists("+relativenumber")
-      if (&number)
-        let l:lpadding += max([&numberwidth, strlen(line('$'))]) + 1
-      elseif (&relativenumber)
-        let l:lpadding += max([&numberwidth, strlen(v:foldstart - line('w0')), strlen(line('w$') - v:foldstart), strlen(v:foldstart)]) + 1
-      endif
-    else
-      if (&number)
-        let l:lpadding += max([&numberwidth, strlen(line('$'))]) + 1
-      endif
-    endif
-" expand tabs
-    let l:start = substitute(getline(v:foldstart), '\t', repeat(' ', &tabstop), 'g')
-    let l:end = substitute(substitute(getline(v:foldend), '\t', repeat(' ', &tabstop), 'g'), '^\s*', '', 'g')
-
-    let l:info = ' (' . (v:foldend - v:foldstart) . ')'
-    let l:infolen = strlen(substitute(l:info, '.', 'x', 'g'))
-    let l:width = winwidth(0) - l:lpadding - l:infolen
-
-    let l:separator = ' … '
-    let l:separatorlen = strlen(substitute(l:separator, '.', 'x', 'g'))
-    let l:start = strpart(l:start , 0, l:width - strlen(substitute(l:end, '.', 'x', 'g')) - l:separatorlen)
-    let l:text = l:start . ' … ' . l:end
-
-    return l:text . repeat(' ', l:width - strlen(substitute(l:text, ".", "x", "g"))) . l:info
-  endfunction
-" SESSION SAVING:
-set vi=%,'50 
-set vi+=\"100,:100 
-if !has('nvim')
-"  set ttymouse=xterm2
-"	set viminfo+=n~/vim/viminfo
-	set vi+=n~/.viminfo
-endif
-
-" NeoVIM specifics
-if has('nvim')
-	set inccommand=nosplit				" live preview of incremental commands
-  tnoremap <Esc> <C-\><C-n> "ESC exits terminal mode
-  tnoremap <M-[> <Esc>      "ALT+ESC sends esc to terminal applicaton
-endif
-
-" PARENTHESIS/BRACES/BRACKETS COMPLETION HANDLING
-inoremap <c-k>( ()<esc>i
-inoremap <c-k>[ []<esc>i
-inoremap <c-k>{ {<return><return>}<esc>ki
-
-" CUSTOM SHORTCUTS:
-nmap ,e :VimFilerB <CR>i
-"noremap ,b :buffer 
-"noremap ,b :VimFilerBufferDir<CR>
-"noremap ,b :Unite buffer directory<CR><C-W>J
-"noremap ,b :CtrlPBuffer<CR>
-noremap ,o :find .\*<tab>
-noremap ,f :VimFilerSimple<CR>
-noremap ,t :TagbarOpenAutoClose<CR>
-nnoremap ,, :tag *
-
-" FILE BROWSING:
+" NETRW 
 let g:netrw_banner=0				"disable banner
 let g:netrw_browse_split=0	"open in prior window
 let g:netrw_altv=1					"open splits to the right
 let g:netrw_liststyle=3			"tree view
 let g:netrw_list_hide=netrw_gitignore#Hide()
 let g:netrw_list_hide.=',\(^\|\s\s\)\zs\.\S+'
-
 " DISABLE GUI STUFF im GVIM:
 if has ('gui_running')
 	set guioptions-=m  "remove menu bar`
@@ -220,8 +148,101 @@ if has ('gui_running')
 	set guifont=Consolas:h10:b:cANSI:qDRAFT
 endif
 
+" FOLDING: {{{1
+" https://coderwall.com/p/usd_cw/a-pretty-vim-foldtext-function
+set foldmethod=syntax
+set foldlevelstart=99
+"set fillchars=fold:\  
 
-"	LINE DRAGGING WITH ALT ARROWS:
+set foldtext=FoldText()
+function! FoldText()
+	let l:lpadding = &fdc
+	redir => l:signs
+	execute 'silent sign place buffer='.bufnr('%')
+	redir End
+	let l:lpadding += l:signs =~ 'id=' ? 2 : 0
+
+	if exists("+relativenumber")
+		if (&number)
+			let l:lpadding += max([&numberwidth, strlen(line('$'))]) + 1
+		elseif (&relativenumber)
+			let l:lpadding += max([&numberwidth, strlen(v:foldstart - line('w0')), strlen(line('w$') - v:foldstart), strlen(v:foldstart)]) + 1
+		endif
+	else
+		if (&number)
+			let l:lpadding += max([&numberwidth, strlen(line('$'))]) + 1
+		endif
+	endif
+	" expand tabs
+	let l:start = substitute(getline(v:foldstart), '\t', repeat(' ', &tabstop), 'g')
+	let l:end = substitute(substitute(getline(v:foldend), '\t', repeat(' ', &tabstop), 'g'), '^\s*', '', 'g')
+
+	let l:info = ' (' . (v:foldend - v:foldstart) . ')'
+	let l:infolen = strlen(substitute(l:info, '.', 'x', 'g'))
+	let l:width = winwidth(0) - l:lpadding - l:infolen
+
+	let l:separator = ' … '
+	let l:separatorlen = strlen(substitute(l:separator, '.', 'x', 'g'))
+	let l:start = strpart(l:start , 0, l:width - strlen(substitute(l:end, '.', 'x', 'g')) - l:separatorlen)
+	let l:text = l:start . ' … ' . l:end
+
+	return l:text . repeat(' ', l:width - strlen(substitute(l:text, ".", "x", "g"))) . l:info
+endfunction
+
+" SESSION SAVING: {{{1
+if has('nvim')
+	set shada=%,'50 
+	set shada+=\"100,:100 
+	set shada+=n~/.nviminfo
+else
+	set vi=%,'50 
+	set vi+=\"100,:100 
+	set vi+=n~/.viminfo
+endif
+
+" NeoVIM specifics
+if has('nvim')
+	set inccommand=nosplit				" live preview of incremental commands
+	tnoremap <Esc> <C-\><C-n> "ESC exits terminal mode
+	tnoremap <M-[> <Esc>      "ALT+ESC sends esc to terminal applicaton
+endif
+
+" PARENTHESIS/BRACES/BRACKETS COMPLETION HANDLING
+inoremap <c-k>( ()<esc>i
+inoremap <c-k>[ []<esc>i
+inoremap <c-k>{ {<return><return>}<esc>ki
+
+" CUSTOM SHORTCUTS: {{{1
+nmap ,e :VimFilerB <CR>i
+" find files under path
+noremap ,o :find .\*<tab>
+" open file explorer 
+noremap ,f :VimFilerSimple<CR>
+" open tagbar 
+noremap ,t :TagbarOpenAutoClose<CR>
+" search for tag
+nnoremap ,, :tag *
+" kk exits insert mode
+inoremap kk <esc>
+" jj exits insert mode
+inoremap jj <esc>
+" ; inserts : in normal mode
+nnoremap ; :
+" Kill buffer 
+map <c-k>k :Bdelete!<cr>
+" CTRL+A selects all lines
+inoremap <C-a> <esc>ggvG$ 
+" CTRL+A selects all lines
+nnoremap <C-a> ggvG$
+" commenting / uncomenting code
+vnoremap <c-k>c :norm _i//<cr>
+vnoremap <c-k>u :norm _2x<cr>
+" Auto close surounding pairs
+inoremap ( ()<ESC>i
+inoremap { {}<ESC>i
+inoremap [ []<ESC>i
+
+"	LINE DRAGGING WITH ALT ARROWS {{{2
 nnoremap <A-down> :m .+1<CR>==
 nnoremap <A-up> :m .-2<CR>==
 inoremap <A-down> <Esc>:m .+1<CR>==gi
@@ -229,7 +250,7 @@ inoremap <A-up> <Esc>:m .-2<CR>==gi
 vnoremap <A-down> :m '>+1<CR>gv=gv
 vnoremap <A-up> :m '<-2<CR>gv=gv
 
-" LINE DRAGGING WITH ALT HJKL:
+" LINE DRAGGING WITH ALT HJKL: {{{2
 nnoremap <A-j> :m .+1<CR>==
 nnoremap <A-k> :m .-2<CR>==
 inoremap <A-j> <Esc>:m .+1<CR>==gi
@@ -237,19 +258,17 @@ inoremap <A-k> <Esc>:m .-2<CR>==gi
 vnoremap <A-j> :m '>+1<CR>gv=gv
 vnoremap <A-k> :m '<-2<CR>gv=gv
 
-" SAVE FILE WITH CTRL S:
+" SAVE FILE WITH CTRL S: {{{2
 " this may require you to put 'stty -ixon' on my .bash_profile 
 nmap <c-s> :update<cr>
 imap <c-s> <esc>:update<cr>:echon "updated"<cr>i
 
-" CYLE BUFFERS AND WINDOWS:
-"nnoremap <Tab> :bn<CR><esc>									"Tab cycles forward
-"nnoremap <S-Tab> :bp<CR><esc>								"Shift-Tab cycles back
+" CYLE BUFFERS AND WINDOWS: {{{2
 "cycle through buffers
 nnoremap <tab> :buffer *<tab>
 nnoremap <C-Tab> :wincmd w<CR><esc>					"Cycle windows
 
-" TEXT SELECTION WIT ARROWS:
+" TEXT SELECTION WIT ARROWS: {{{2
 " shift+arrows
 nmap <S-Up> v<Up>
 nmap <S-Down> v<Down>
@@ -260,15 +279,12 @@ vmap <S-Down> <Down>
 vmap <S-Left> <Left>
 vmap <S-Right> <Right>
 
-"COPY AND PASTE:
+"	INSERT MODE COPY AND PASTE {{{2
 " Use standard copy/paste/cut shortcuts
-"vmap <C-c> y<Esc>i
-"vmap <C-x> d<Esc>i
-"map <C-v> pa
 imap <C-v> <Esc>pa
 imap <C-z> <Esc>ua
 
-" TAG JUMPING:
+" TAGGING: {{{1
 command! MakeTags !ctags -R src
 set tags=./tags
 set tags+=tags
@@ -282,7 +298,8 @@ set errorformat+=\\\ %#%f(%l)\ :\ %#%t%[A-z]%#\ %m
 set errorformat+=,%f:\ error\ %s:%m
 set errorformat+=,%f:\ fatal\ error\ %s:%m
 autocmd BufWritePost *.cpp,*.c,*.h,*.hpp :call jobstart('ctags -R --sort=1 --c++-kinds=+p --fields=+iaS --extra=+q --language-force=C++ -f tags src')
-" BUILD SETTING:
+
+" BUILD: {{{1
 function! Build()
 	:silent make clean && make
 	:cw
@@ -290,20 +307,23 @@ function! Build()
 endfunction
 
 function! Run()
-	:silent !build\ldk.exe
+	:silent !make run
 endfunction
 
 function! Debug()
-	:silent !devenv build\ldare.exe
+	:silent !make debug
 endfunction
 
 augroup qfixCloseOnEscape
-    autocmd!
-    autocmd FileType qf if mapcheck('<esc>', 'n') ==# '' | nnoremap <buffer><silent> <esc> :cclose<bar>lclose<CR> | endif
-    autocmd FileType qf nnoremap <buffer><silent> <F4> :cclose<bar>lclose<CR> 
+	autocmd!
+	autocmd FileType qf if mapcheck('<esc>', 'n') ==# '' | nnoremap <buffer><silent> <esc> :cclose<bar>lclose<CR> | endif
+	autocmd FileType qf nnoremap <buffer><silent> <F4> :cclose<bar>lclose<CR> 
 augroup END
 
 autocmd VimResized * wincmd =
+
+"Force error window to appear at bottom
+autocmd FileType qf wincmd J | :set wrap
 
 function! ToggleQuickFix()
 	if exists("g:qwindow")
@@ -322,30 +342,18 @@ endfunction
 map <F5> :call Run()<cr>
 map <F9> :call Build()<cr>
 map <F11> :call Debug()<cr>
-"nmap <script> <silent> <F4> :call ToggleQuickFix()<CR>
 nmap <script> <silent> <F4> :copen<CR>
-
-
-map <c-k>k :Bdelete!<cr>
-
-inoremap <C-a> <esc>ggvG$
-nnoremap <C-a> ggvG$
 
 command! Clear bufdo Bwipeout!
 command! Todo new | wincmd J | set ft:cpp | r!todo.bat 
 
-" HOOKS:
-" commenting / uncomenting code
-vnoremap <c-k>c :norm _i//<cr>
-vnoremap <c-k>u :norm _2x<cr>
 
-" Auto close surounding pairs
-inoremap ( ()<ESC>i
-inoremap { {}<ESC>i
-inoremap [ []<ESC>i
-
-"Force error window to appear at bottom
-autocmd FileType qf wincmd J | :set wrap
+" COLORSCHEME: {{{1
+"try loading a color scheme if it exists
+"let expected_theme="coffee"
+"if filereadable($VIMHOME."/colors/".$expected_theme)
+"	colorscheme $expeted_theme
+"endif
 
 " Hide division line no matter the colorscheme 
 autocmd ColorScheme * call OnThemeReload()
@@ -354,15 +362,7 @@ function! OnThemeReload()
 	highlight VertSplit guibg=bg guifg=bg
 	set fillchars+=vert:\ 
 endfunction
-
-
-"try loading a color scheme if it exists
-"let expected_theme="coffee"
-"if filereadable($VIMHOME."/colors/".$expected_theme)
-"	colorscheme $expeted_theme
-"endif
 colorscheme home 
-let g:airline_theme='minimalist'
 highlight VertSplit guibg=bg guifg=bg
-
 " end of .vimrc
+
