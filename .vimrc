@@ -8,17 +8,17 @@
 " set packpath+=~/.vim
 " source ~/.vimrc
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"#1 VIMRC
 let $VIMHOME = $HOME."/.vim"
 let $SWAPDIR = $VIMHOME."/swap//"
 
 augroup vimrc
 	autocmd!
-	autocmd BufEnter .vimrc set foldmethod=marker foldcolumn=3
+	autocmd BufEnter .vimrc set foldmethod=marker foldcolumn=3 foldmarker=\"\#,\"\#
 	autocmd BufEnter .vimrc normal! zM
 augroup END
 
-
-" PLUGINS {{{
+"#1 PLUGINS
 call plug#begin('~/.vim/plugged')
 "Plug 'vim-airline/vim-airline'
 "Plug 'kien/ctrlp.vim'
@@ -30,70 +30,70 @@ Plug 'ryanoasis/vim-devicons'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'moll/vim-bbye'
 Plug 'yuttie/comfortable-motion.vim' "for better scrolling
-" Snipmat and dependencies
+" Snipmate and dependencies
 Plug 'MarcWeber/vim-addon-mw-utils'
 Plug 'tomtom/tlib_vim'
 Plug 'garbas/vim-snipmate'
 Plug 'honza/vim-snippets'
 call plug#end()
 
-"let vimfiler replace netrw
-let g:vimfiler_as_default_explorer = 1
+	"#2 VIMFILER
+	"let vimfiler replace netrw
+	let g:vimfiler_as_default_explorer = 1
 
-" OmniCppComplete {{{2
-" reference http://vim.wikia.com/wiki/C%2B%2B_code_completion
-let OmniCpp_NamespaceSearch = 1
-let OmniCpp_GlobalScopeSearch = 1
-let OmniCpp_ShowAccess = 1
-let OmniCpp_ShowPrototypeInAbbr = 1 " show function parameters
-let OmniCpp_MayCompleteDot = 1 " autocomplete after .
-let OmniCpp_MayCompleteArrow = 1 " autocomplete after ->
-let OmniCpp_MayCompleteScope = 1 " autocomplete after ::
-let OmniCpp_DefaultNamespaces = ["std", "_GLIBCXX_STD"]
-" automatically open and close the popup menu / preview window
-au CursorMovedI,InsertLeave * if pumvisible() == 0|silent! pclose|endif
-set completeopt=menuone,menu,longest,preview
+	"#2 OMNI-CPP-COMPLETE
+	" reference http://vim.wikia.com/wiki/C%2B%2B_code_completion
+	let OmniCpp_NamespaceSearch = 1
+	let OmniCpp_GlobalScopeSearch = 1
+	let OmniCpp_ShowAccess = 1
+	let OmniCpp_ShowPrototypeInAbbr = 1 " show function parameters
+	let OmniCpp_MayCompleteDot = 1 " autocomplete after .
+	let OmniCpp_MayCompleteArrow = 1 " autocomplete after ->
+	let OmniCpp_MayCompleteScope = 1 " autocomplete after ::
+	let OmniCpp_DefaultNamespaces = ["std", "_GLIBCXX_STD"]
+	" automatically open and close the popup menu / preview window
+	au CursorMovedI,InsertLeave * if pumvisible() == 0|silent! pclose|endif
+	set completeopt=menuone,menu,longest,preview
 
-" AIRLINE {{{2
-let g:airline_theme='minimalist'
-let g:airline_powerline_fonts = 1
+	"#2 AIRLINE
+	let g:airline_theme='minimalist'
+	let g:airline_powerline_fonts = 1
 
-if !exists('g:airline_symbols')
-	let g:airline_symbols = {}
-endif
+	if !exists('g:airline_symbols')
+		let g:airline_symbols = {}
+	endif
 
-let g:comfortable_motion_scroll_down_key = "j"
-let g:comfortable_motion_scroll_up_key = "k"
-noremap <silent> <ScrollWheelDown> :call comfortable_motion#flick(40)<CR>
-noremap <silent> <ScrollWheelUp>   :call comfortable_motion#flick(-40)<CR>
-" unicode symbols
-let g:airline_powerline_fonts = 1
-let g:airline_left_sep = '»'
-let g:airline_left_sep = '▶'
-let g:airline_right_sep = '«'
-let g:airline_right_sep = '◀'
-let g:airline_symbols.linenr = '␊'
-let g:airline_symbols.linenr = '␤'
-let g:airline_symbols.linenr = '¶'
-let g:airline_symbols.branch = '⎇'
-let g:airline_symbols.paste = 'ρ'
-let g:airline_symbols.paste = 'Þ'
-let g:airline_symbols.paste = '∥'
-let g:airline_symbols.whitespace = 'Ξ'
+	let g:comfortable_motion_scroll_down_key = "j"
+	let g:comfortable_motion_scroll_up_key = "k"
+	noremap <silent> <ScrollWheelDown> :call comfortable_motion#flick(40)<CR>
+	noremap <silent> <ScrollWheelUp>   :call comfortable_motion#flick(-40)<CR>
+	" unicode symbols
+	let g:airline_powerline_fonts = 1
+	let g:airline_left_sep = '»'
+	let g:airline_left_sep = '▶'
+	let g:airline_right_sep = '«'
+	let g:airline_right_sep = '◀'
+	let g:airline_symbols.linenr = '␊'
+	let g:airline_symbols.linenr = '␤'
+	let g:airline_symbols.linenr = '¶'
+	let g:airline_symbols.branch = '⎇'
+	let g:airline_symbols.paste = 'ρ'
+	let g:airline_symbols.paste = 'Þ'
+	let g:airline_symbols.paste = '∥'
+	let g:airline_symbols.whitespace = 'Ξ'
 
-" airline symbols
-let g:airline_left_sep = ''
-let g:airline_left_alt_sep = ''
-let g:airline_right_sep = ''
-let g:airline_right_alt_sep = ''
-let g:airline_symbols.branch = ''
-let g:airline_symbols.readonly = ''
-let g:airline_symbols.linenr = ''
+	" airline symbols
+	let g:airline_left_sep = ''
+	let g:airline_left_alt_sep = ''
+	let g:airline_right_sep = ''
+	let g:airline_right_alt_sep = ''
+	let g:airline_symbols.branch = ''
+	let g:airline_symbols.readonly = ''
+	let g:airline_symbols.linenr = ''
 
-set directory=$SWAPDIR
+	set directory=$SWAPDIR
 
-
-" MISC SETTINGS: {{{1
+"#1 MISC SETTINGS:
 syntax on
 filetype plugin on
 filetype indent on
@@ -148,7 +148,7 @@ if has ('gui_running')
 	set guifont=Consolas:h10:b:cANSI:qDRAFT
 endif
 
-" FOLDING: {{{1
+"#1 FOLDING: 
 " https://coderwall.com/p/usd_cw/a-pretty-vim-foldtext-function
 set foldmethod=syntax
 set foldlevelstart=99
@@ -189,7 +189,7 @@ function! FoldText()
 	return l:text . repeat(' ', l:width - strlen(substitute(l:text, ".", "x", "g"))) . l:info
 endfunction
 
-" SESSION SAVING: {{{1
+"#1 SESSION SAVING:
 if has('nvim')
 	set shada=%,'50 
 	set shada+=\"100,:100 
@@ -200,11 +200,11 @@ else
 	set vi+=n~/.viminfo
 endif
 
-" NeoVIM specifics
+"#1 NEOVIM SPECIFIC
 if has('nvim')
 	set inccommand=nosplit				" live preview of incremental commands
-	tnoremap <Esc> <C-\><C-n> "ESC exits terminal mode
-	tnoremap <M-[> <Esc>      "ALT+ESC sends esc to terminal applicaton
+	tnoremap <Esc> <C-\><C-n> 		" ESC exits terminal mode
+	tnoremap <M-[> <Esc>      		" ALT+ESC sends esc to terminal applicaton
 endif
 
 " PARENTHESIS/BRACES/BRACKETS COMPLETION HANDLING
@@ -212,7 +212,7 @@ inoremap <c-k>( ()<esc>i
 inoremap <c-k>[ []<esc>i
 inoremap <c-k>{ {<return><return>}<esc>ki
 
-" CUSTOM SHORTCUTS: {{{1
+"#1 CUSTOM SHORTCUTS:
 nmap ,e :VimFilerB <CR>i
 " find files under path
 noremap ,o :find .\*<tab>
@@ -242,49 +242,49 @@ inoremap ( ()<ESC>i
 inoremap { {}<ESC>i
 inoremap [ []<ESC>i
 
-"	LINE DRAGGING WITH ALT ARROWS {{{2
-nnoremap <A-down> :m .+1<CR>==
-nnoremap <A-up> :m .-2<CR>==
-inoremap <A-down> <Esc>:m .+1<CR>==gi
-inoremap <A-up> <Esc>:m .-2<CR>==gi
-vnoremap <A-down> :m '>+1<CR>gv=gv
-vnoremap <A-up> :m '<-2<CR>gv=gv
+	"#2	LINE DRAGGING WITH ALT ARROWS
+	nnoremap <A-down> :m .+1<CR>==
+	nnoremap <A-up> :m .-2<CR>==
+	inoremap <A-down> <Esc>:m .+1<CR>==gi
+	inoremap <A-up> <Esc>:m .-2<CR>==gi
+	vnoremap <A-down> :m '>+1<CR>gv=gv
+	vnoremap <A-up> :m '<-2<CR>gv=gv
 
-" LINE DRAGGING WITH ALT HJKL: {{{2
-nnoremap <A-j> :m .+1<CR>==
-nnoremap <A-k> :m .-2<CR>==
-inoremap <A-j> <Esc>:m .+1<CR>==gi
-inoremap <A-k> <Esc>:m .-2<CR>==gi
-vnoremap <A-j> :m '>+1<CR>gv=gv
-vnoremap <A-k> :m '<-2<CR>gv=gv
+	"#2 LINE DRAGGING WITH ALT HJKL:
+	nnoremap <A-j> :m .+1<CR>==
+	nnoremap <A-k> :m .-2<CR>==
+	inoremap <A-j> <Esc>:m .+1<CR>==gi
+	inoremap <A-k> <Esc>:m .-2<CR>==gi
+	vnoremap <A-j> :m '>+1<CR>gv=gv
+	vnoremap <A-k> :m '<-2<CR>gv=gv
 
-" SAVE FILE WITH CTRL S: {{{2
-" this may require you to put 'stty -ixon' on my .bash_profile 
-nmap <c-s> :update<cr>
-imap <c-s> <esc>:update<cr>:echon "updated"<cr>i
+	"#2 SAVE FILE WITH CTRL S:
+	" this may require you to put 'stty -ixon' on my .bash_profile 
+	nmap <c-s> :update<cr>
+	imap <c-s> <esc>:update<cr>:echon "updated"<cr>i
 
-" CYLE BUFFERS AND WINDOWS: {{{2
-"cycle through buffers
-nnoremap <tab> :buffer *<tab>
-nnoremap <C-Tab> :wincmd w<CR><esc>					"Cycle windows
+	"#2 CYLE BUFFERS AND WINDOWS:
+	"cycle through buffers
+	nnoremap <tab> :buffer *<tab>
+	nnoremap <C-Tab> :wincmd w<CR><esc>					"Cycle windows
 
-" TEXT SELECTION WIT ARROWS: {{{2
-" shift+arrows
-nmap <S-Up> v<Up>
-nmap <S-Down> v<Down>
-nmap <S-Left> v<Left>
-nmap <S-Right> v<Right>
-vmap <S-Up> <Up>
-vmap <S-Down> <Down>
-vmap <S-Left> <Left>
-vmap <S-Right> <Right>
+	"#2 TEXT SELECTION WIT ARROWS:
+	" shift+arrows
+	nmap <S-Up> v<Up>
+	nmap <S-Down> v<Down>
+	nmap <S-Left> v<Left>
+	nmap <S-Right> v<Right>
+	vmap <S-Up> <Up>
+	vmap <S-Down> <Down>
+	vmap <S-Left> <Left>
+	vmap <S-Right> <Right>
 
-"	INSERT MODE COPY AND PASTE {{{2
-" Use standard copy/paste/cut shortcuts
-imap <C-v> <Esc>pa
-imap <C-z> <Esc>ua
+	"#2	INSERT MODE COPY AND PASTE:
+	" Use standard copy/paste/cut shortcuts
+	imap <C-v> <Esc>pa
+	imap <C-z> <Esc>ua
 
-" TAGGING: {{{1
+"#1 TAGGING:
 command! MakeTags !ctags -R src
 set tags=./tags
 set tags+=tags
@@ -299,7 +299,7 @@ set errorformat+=,%f:\ error\ %s:%m
 set errorformat+=,%f:\ fatal\ error\ %s:%m
 autocmd BufWritePost *.cpp,*.c,*.h,*.hpp :call jobstart('ctags -R --sort=1 --c++-kinds=+p --fields=+iaS --extra=+q --language-force=C++ -f tags src')
 
-" BUILD: {{{1
+"#1 BUILD:
 function! Build()
 	:silent make clean && make
 	:cw
@@ -348,7 +348,7 @@ command! Clear bufdo Bwipeout!
 command! Todo new | wincmd J | set ft:cpp | r!todo.bat 
 
 
-" COLORSCHEME: {{{1
+"#1 COLORSCHEME:
 "try loading a color scheme if it exists
 "let expected_theme="coffee"
 "if filereadable($VIMHOME."/colors/".$expected_theme)
