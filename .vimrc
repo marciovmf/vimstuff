@@ -286,20 +286,17 @@ inoremap [ []<ESC>i
 
 "#1 TAGGING:
 command! MakeTags !ctags -R src
-set tags=./tags
-set tags+=tags
+set tags=./tags;
+"set tags+=tags;
 if has('win32')
 	set tags+=$VIMHOME\tags\win32
 	set tags+=$VIMHOME\tags\sdl
 endif
-:compiler msvc
-set makeprg=make
-set errorformat+=\\\ %#%f(%l)\ :\ %#%t%[A-z]%#\ %m
-set errorformat+=,%f:\ error\ %s:%m
-set errorformat+=,%f:\ fatal\ error\ %s:%m
-autocmd BufWritePost *.cpp,*.c,*.h,*.hpp :call jobstart('ctags -R --sort=1 --c++-kinds=+p --fields=+iaS --extra=+q --language-force=C++ -f tags src')
 
-"#1 BUILD:
+autocmd BufWritePost *.cpp,*.c,*.h,*.hpp :call jobstart('ctags -R --sort=1 --c++-kinds=+p --fields=+iaS --extra=+q --language-force=C++ -f tags .')
+autocmd BufReadPost *.cpp,*.c,*.h,*.hpp :call jobstart('ctags -R --sort=1 --c++-kinds=+p --fields=+iaS --extra=+q --language-force=C++ -f tags .')
+
+"#1 COMPILING:
 function! Build()
 	:silent make clean && make
 	:cw
@@ -320,6 +317,11 @@ augroup qfixCloseOnEscape
 	autocmd FileType qf nnoremap <buffer><silent> <F4> :cclose<bar>lclose<CR> 
 augroup END
 
+:compiler msvc
+set makeprg=make
+set errorformat+=\\\ %#%f(%l)\ :\ %#%t%[A-z]%#\ %m
+set errorformat+=,%f:\ error\ %s:%m
+set errorformat+=,%f:\ fatal\ error\ %s:%m
 autocmd VimResized * wincmd =
 
 "Force error window to appear at bottom
@@ -346,7 +348,6 @@ nmap <script> <silent> <F4> :copen<CR>
 
 command! Clear bufdo Bwipeout!
 command! Todo new | wincmd J | set ft:cpp | r!todo.bat 
-
 
 "#1 COLORSCHEME:
 "try loading a color scheme if it exists
