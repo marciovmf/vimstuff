@@ -21,15 +21,15 @@ augroup END
 "#1 PLUGINS
 call plug#begin('~/.vim/plugged')
 "Plug 'vim-airline/vim-airline'
+"Plug 'vim-airline/vim-airline-themes'
 "Plug 'kien/ctrlp.vim'
-Plug 'Shougo/unite.vim'
-Plug 'Shougo/vimfiler.vim'
+"Plug 'Shougo/unite.vim'
+Plug 'yuttie/comfortable-motion.vim' 	"for better scrolling
+Plug 'Shougo/vimfiler.vim'						"Better netrw
 Plug 'vim-scripts/OmniCppComplete'
 Plug 'majutsushi/tagbar'
-Plug 'ryanoasis/vim-devicons'
-Plug 'vim-airline/vim-airline-themes'
-Plug 'moll/vim-bbye'
-Plug 'yuttie/comfortable-motion.vim' "for better scrolling
+Plug 'ryanoasis/vim-devicons'					"fancy icons.
+Plug 'moll/vim-bbye' 									"keeps window open after killing its last buffer
 " Snipmate and dependencies
 Plug 'MarcWeber/vim-addon-mw-utils'
 Plug 'tomtom/tlib_vim'
@@ -37,10 +37,24 @@ Plug 'garbas/vim-snipmate'
 Plug 'honza/vim-snippets'
 call plug#end()
 
+	"#2 BBYE
+	" Kill buffer 
+	map <c-k>k :Bdelete!<cr>
+
+	"#2 TAGBAR
+	"open tagbar 
+	noremap ,t :TagbarOpenAutoClose<CR>
+	" search for tag
+	nnoremap ,, :tag *
+
 	"#2 VIMFILER
 	"let vimfiler replace netrw
 	let g:vimfiler_as_default_explorer = 1
-
+	nmap ,e :VimFilerB <CR>i
+	" open file explorer 
+	noremap ,f :VimFilerSimple<CR>
+	
+	
 	"#2 OMNI-CPP-COMPLETE
 	" reference http://vim.wikia.com/wiki/C%2B%2B_code_completion
 	let OmniCpp_NamespaceSearch = 1
@@ -200,36 +214,22 @@ else
 	set vi+=n~/.viminfo
 endif
 
-"#1 NEOVIM SPECIFIC
+"#1 NEOVIM SETTINGS AND MAPPINGS
 if has('nvim')
 	set inccommand=nosplit				" live preview of incremental commands
 	tnoremap <Esc> <C-\><C-n> 		" ESC exits terminal mode
 	tnoremap <M-[> <Esc>      		" ALT+ESC sends esc to terminal applicaton
 endif
 
-" PARENTHESIS/BRACES/BRACKETS COMPLETION HANDLING
-inoremap <c-k>( ()<esc>i
-inoremap <c-k>[ []<esc>i
-inoremap <c-k>{ {<return><return>}<esc>ki
-
 "#1 CUSTOM SHORTCUTS:
-nmap ,e :VimFilerB <CR>i
 " find files under path
 noremap ,o :find .\*<tab>
-" open file explorer 
-noremap ,f :VimFilerSimple<CR>
-" open tagbar 
-noremap ,t :TagbarOpenAutoClose<CR>
-" search for tag
-nnoremap ,, :tag *
 " kk exits insert mode
 inoremap kk <esc>
 " jj exits insert mode
 inoremap jj <esc>
 " ; inserts : in normal mode
 nnoremap ; :
-" Kill buffer 
-map <c-k>k :Bdelete!<cr>
 " CTRL+A selects all lines
 inoremap <C-a> <esc>ggvG$ 
 " CTRL+A selects all lines
@@ -242,7 +242,7 @@ inoremap ( ()<ESC>i
 inoremap { {}<ESC>i
 inoremap [ []<ESC>i
 
-	"#2	LINE DRAGGING WITH ALT ARROWS
+	"#2 LINE DRAGGING WITH ALT ARROWS
 	nnoremap <A-down> :m .+1<CR>==
 	nnoremap <A-up> :m .-2<CR>==
 	inoremap <A-down> <Esc>:m .+1<CR>==gi
@@ -268,7 +268,7 @@ inoremap [ []<ESC>i
 	nnoremap <tab> :buffer *<tab>
 	nnoremap <C-Tab> :wincmd w<CR><esc>					"Cycle windows
 
-	"#2 TEXT SELECTION WIT ARROWS:
+	"#2 TEXT SELECTION WITH ARROWS:
 	" shift+arrows
 	nmap <S-Up> v<Up>
 	nmap <S-Down> v<Down>
@@ -279,7 +279,7 @@ inoremap [ []<ESC>i
 	vmap <S-Left> <Left>
 	vmap <S-Right> <Right>
 
-	"#2	INSERT MODE COPY AND PASTE:
+	"#2 INSERT MODE COPY AND PASTE:
 	" Use standard copy/paste/cut shortcuts
 	imap <C-v> <Esc>pa
 	imap <C-z> <Esc>ua
