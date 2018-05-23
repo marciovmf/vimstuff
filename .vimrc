@@ -1,12 +1,12 @@
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Marcio (N)VIM config                                                    "
-" https://gist.github.com/marciovmf/1b7b7371ba1f7137e94eccb528b3206e   "
+" Marciovmf (N)VIM config                                                    "
+" https://github.com/marciovmf/vimstuff
 " useful resources:
-" http://ricostacruz.com/cheatsheets/vimscript
+" 	http://ricostacruz.com/cheatsheets/vimscript
 " NOTE: if running neovim, set init.vim as follows:
-" set runtimepath+=~/vimfiles,~/vimfiles/after
-" set packpath+=~/.vim
-" source ~/.vimrc
+"	 set runtimepath+=~/vimfiles,~/vimfiles/after
+"	 set packpath+=~/.vim
+"	 source ~/.vimrc
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "#1 VIMRC
 let $VIMHOME = $HOME."/.vim"
