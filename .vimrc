@@ -162,6 +162,14 @@ if has ('gui_running')
 	set guifont=Consolas:h10:b:cANSI:qDRAFT
 endif
 
+set title
+augroup dirchange
+    autocmd!
+    "autocmd DirChanged * let &titlestring=v:event['cwd']
+    autocmd BufEnter * let &titlestring = expand("%:p")
+
+augroup END
+
 "#1 FOLDING: 
 " https://coderwall.com/p/usd_cw/a-pretty-vim-foldtext-function
 set foldmethod=syntax
