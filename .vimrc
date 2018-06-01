@@ -23,7 +23,7 @@ call plug#begin('~/.vim/plugged')
 "Plug 'vim-airline/vim-airline'
 "Plug 'vim-airline/vim-airline-themes'
 "Plug 'kien/ctrlp.vim'
-"Plug 'Shougo/unite.vim'
+Plug 'Shougo/unite.vim'
 Plug 'yuttie/comfortable-motion.vim' 	"for better scrolling
 Plug 'Shougo/vimfiler.vim'						"Better netrw
 Plug 'vim-scripts/OmniCppComplete'
@@ -238,7 +238,8 @@ inoremap kk <esc>
 inoremap jj <esc>
 " ; inserts : in normal mode
 nnoremap ; :
-" ERNTER adds new line on normal mode!
+" ERNTER adds new line on normal mode! 
+" (Except on quickfix window)
 :autocmd BufReadPost quickfix nnoremap <buffer> <CR> <CR>
 nnoremap <CR> o<esc>
 " CTRL+A selects all lines
@@ -246,8 +247,9 @@ inoremap <C-a> <esc>ggvG$
 " CTRL+A selects all lines
 nnoremap <C-a> ggvG$
 " commenting / uncomenting code
-vnoremap <c-k>c :norm _i//<cr>
-vnoremap <c-k>u :norm _2x<cr>
+vnoremap kc :norm _i//<cr>
+vnoremap ku :norm _2x<cr>
+
 " Auto close surounding pairs
 inoremap ( ()<ESC>i
 inoremap { {}<ESC>i
