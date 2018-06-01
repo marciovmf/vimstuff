@@ -238,6 +238,8 @@ inoremap kk <esc>
 inoremap jj <esc>
 " ; inserts : in normal mode
 nnoremap ; :
+" ERNTER adds new line on normal mode
+nnoremap <CR> o<esc>
 " CTRL+A selects all lines
 inoremap <C-a> <esc>ggvG$ 
 " CTRL+A selects all lines
