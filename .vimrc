@@ -35,6 +35,7 @@ Plug 'MarcWeber/vim-addon-mw-utils'
 Plug 'tomtom/tlib_vim'
 Plug 'garbas/vim-snipmate'
 Plug 'honza/vim-snippets'
+"Plug 'xolox/vim-easytags'
 call plug#end()
 
 	"#2 BBYE
@@ -111,6 +112,7 @@ call plug#end()
 syntax on
 filetype plugin on
 filetype indent on
+let mapleader = "\<space>"
 set nocompatible						"Not compatible with VI
 set incsearch								"Enable incremental search
 set number									"Show line numbers
@@ -241,14 +243,23 @@ nnoremap ; :
 " ERNTER adds new line on normal mode! 
 " (Except on quickfix window)
 :autocmd BufReadPost quickfix nnoremap <buffer> <CR> <CR>
+:autocmd BufReadPost help nnoremap <buffer> <CR> <CR>
 nnoremap <CR> o<esc>
 " CTRL+A selects all lines
 inoremap <C-a> <esc>ggvG$ 
 " CTRL+A selects all lines
 nnoremap <C-a> ggvG$
 " commenting / uncomenting code
-vnoremap kc :norm _i//<cr>
-vnoremap ku :norm _2x<cr>
+function! UncommentLine()
+	:s/^.*\/\//
+	:noh
+	:norm ==
+endfunction
+
+vnoremap <leader>c :norm I//<cr>
+vnoremap <leader>u :call UncommentLine()<cr>
+nnoremap <leader>c :norm I//<cr>
+nnoremap <leader>u :call UncommentLine()<cr>
 
 " Auto close surounding pairs
 inoremap ( ()<ESC>i
@@ -298,7 +309,13 @@ inoremap [ []<ESC>i
 	imap <C-z> <Esc>ua
 
 "#1 TAGGING:
-command! MakeTags !ctags -R src
+
+"if has('nvim')
+"	command! MakeTags :call jobstart('ctags -R --c++-kinds=+p --fields=+iaS --extra=+q .')
+"else
+	command! MakeTags !ctags -R --c++-kinds=+p --fields=+iaS --extra=+q .
+"endif
+
 set tags=./tags;
 "set tags+=tags;
 if has('win32')
@@ -306,8 +323,8 @@ if has('win32')
 	set tags+=$VIMHOME\tags\sdl
 endif
 
-autocmd BufWritePost *.cpp,*.c,*.h,*.hpp :call jobstart('ctags -R --sort=1 --c++-kinds=+p --fields=+iaS --extra=+q --language-force=C++ -f tags .')
-autocmd BufReadPost *.cpp,*.c,*.h,*.hpp :call jobstart('ctags -R --sort=1 --c++-kinds=+p --fields=+iaS --extra=+q --language-force=C++ -f tags .')
+autocmd BufReadPost *.cpp,*.c,*.h,*.hpp :silent MakeTags
+autocmd BufWritePost *.cpp,*.c,*.h,*.hpp :silent MakeTags
 
 "#1 COMPILING:
 function! Build()
