@@ -396,4 +396,4 @@ endfunction
 colorscheme home 
 highlight VertSplit guibg=bg guifg=bg
 " end of .vimrc
-
+"
