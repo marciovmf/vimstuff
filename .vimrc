@@ -20,8 +20,8 @@ augroup END
 
 "#1 PLUGINS
 call plug#begin('~/.vim/plugged')
-"Plug 'vim-airline/vim-airline'
-"Plug 'vim-airline/vim-airline-themes'
+" Plug 'vim-airline/vim-airline'
+" Plug 'vim-airline/vim-airline-themes'
 "Plug 'kien/ctrlp.vim'
 Plug 'Shougo/unite.vim'
 Plug 'yuttie/comfortable-motion.vim' 	"for better scrolling
@@ -171,6 +171,8 @@ augroup dirchange
     autocmd BufEnter * let &titlestring = expand("%:p")
 
 augroup END
+" Statusline with current tag name
+set statusline=%<%f\ %h%m%r\ \ \ \ %{tagbar#currenttag('%s','-','f')}\%=\ \ %l,%c%V\ %P
 
 "#1 FOLDING: 
 " https://coderwall.com/p/usd_cw/a-pretty-vim-foldtext-function
@@ -238,8 +240,6 @@ noremap ,o :find .\*<tab>
 inoremap kk <esc>
 " jj exits insert mode
 inoremap jj <esc>
-" ; inserts : in normal mode
-nnoremap ; :
 " ERNTER adds new line on normal mode! 
 " (Except on quickfix window)
 :autocmd BufReadPost quickfix nnoremap <buffer> <CR> <CR>
