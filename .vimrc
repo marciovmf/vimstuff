@@ -36,6 +36,13 @@ Plug 'tomtom/tlib_vim'
 Plug 'garbas/vim-snipmate'
 Plug 'honza/vim-snippets'
 "Plug 'xolox/vim-easytags'
+Plug 'roblillack/vim-bufferlist'
+"Colorschemes
+Plug 'AlessandroYorba/Despacio'
+Plug 'sherifkandeel/vim-colors' 
+Plug 'pboettch/vim-highlight-cursor-words'
+Plug 'tpope/vim-surround'
+Plug 'tpope/vim-repeat'
 call plug#end()
 
 "#2 BBYE
@@ -362,11 +369,11 @@ function! Debug()
   :silent !make debug
 endfunction
 
-augroup qfixCloseOnEscape
-  autocmd!
-  autocmd FileType qf if mapcheck('<esc>', 'n') ==# '' | nnoremap <buffer><silent> <esc> :cclose<bar>lclose<CR> | endif
-  autocmd FileType qf nnoremap <buffer><silent> <F4> :cclose<bar>lclose<CR> 
-augroup END
+"augroup qfixCloseOnEscape
+"  autocmd!
+"  autocmd FileType qf if mapcheck('<esc>', 'n') ==# '' | nnoremap <buffer><silent> <esc> :bprev<CR> | endif
+"  autocmd FileType qf nnoremap <buffer><silent> <F4> :bprev<CR> 
+"augroup END
 
 :compiler msvc
 set makeprg=make
@@ -374,9 +381,6 @@ set errorformat+=\\\ %#%f(%l)\ :\ %#%t%[A-z]%#\ %m
 set errorformat+=,%f:\ error\ %s:%m
 set errorformat+=,%f:\ fatal\ error\ %s:%m
 autocmd VimResized * :wincmd =
-
-"Force error window to appear at bottom
-autocmd FileType qf wincmd J | :set wrap
 
 function! ToggleQuickFix()
   if exists("g:qwindow")
@@ -395,10 +399,24 @@ endfunction
 map <F5> :call Run()<cr>
 map <F9> :call Build()<cr>
 map <F11> :call Debug()<cr>
-nmap <script> <silent> <F4> :copen<CR>
+nmap <script> <silent> <F4> :call OpenPrefixWindow()<CR>
+
+" Quickfix
+function OpenPrefixWindow()
+    let currentWindow = winnr()
+    only
+    copen
+    if (currentWindow == 1)
+        wincmd L
+    else
+        wincmd H
+    endif
+endfunction
+
+au QuickFixCmdPost * :call OpenPrefixWindow()
 
 command! Clear bufdo Bwipeout!
-command! Todo new | wincmd J | set ft:cpp | r!todo.bat 
+command! Todo vnew | set ft:cpp | r!todo.bat 
 
 "#1 COLORSCHEME:
 "try loading a color scheme if it exists
