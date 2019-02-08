@@ -418,6 +418,34 @@ au QuickFixCmdPost * :call OpenPrefixWindow()
 command! Clear bufdo Bwipeout!
 command! Todo vnew | set ft:cpp | r!todo.bat 
 
+"#1 Workflow
+function! WindowRecycle()
+ 
+  let wincount = winnr('$')
+
+  if wincount > 2
+    let bufid = bufnr("#")
+    let lastwin = winnr("#")
+   
+    " Swap to 'other' window position
+    if lastwin > 2
+      wincmd H
+    else
+      wincmd L
+    endif
+
+    wincmd q
+    if bufexists(bufid)
+      execute ":buffer " .bufid
+    endif
+
+  endif
+endfunction
+
+augroup bufRecycle
+  au!
+  autocmd WinEnter * call WindowRecycle()
+augroup END
 "#1 COLORSCHEME:
 "try loading a color scheme if it exists
 "let expected_theme="coffee"
