@@ -1,4 +1,4 @@
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+﻿""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Marciovmf (N)VIM config                                                    "
 " https://github.com/marciovmf/vimstuff
 " useful resources:
@@ -15,7 +15,7 @@ let $SWAPDIR = $VIMHOME."/swap//"
 augroup vimrc
   autocmd!
   autocmd BufEnter .vimrc set foldmethod=marker foldcolumn=3 foldmarker=\"\#,\"\#
-  autocmd BufEnter .vimrc normal! zM
+  "autocmd BufEnter .vimrc normal! zM
 augroup END
 
 "#1 PLUGINS
@@ -36,6 +36,13 @@ Plug 'tomtom/tlib_vim'
 Plug 'garbas/vim-snipmate'
 Plug 'honza/vim-snippets'
 "Plug 'xolox/vim-easytags'
+Plug 'roblillack/vim-bufferlist'
+"Colorschemes
+Plug 'AlessandroYorba/Despacio'
+Plug 'sherifkandeel/vim-colors' 
+Plug 'pboettch/vim-highlight-cursor-words'
+Plug 'tpope/vim-surround'
+Plug 'tpope/vim-repeat'
 call plug#end()
 
 "#2 BBYE
@@ -44,9 +51,22 @@ map <c-k>k :Bdelete!<cr>
 
 "#2 TAGBAR
 "open tagbar 
-noremap ,t :TagbarOpenAutoClose<CR>
+"noremap ,t :TagbarOpenAutoClose<CR>
+"noremap ,t :TagbarOpen<CR>
+noremap ,t :silent call OpenTagbarHalfWindow()<CR>
 " search for tag
 nnoremap ,, :tag *
+
+function! OpenTagbarHalfWindow()
+  "I don't know why tagbar default window does not let me resize it
+  " This is a hacky way to keep tagbar window width under control :(
+  " What I mean is: This is hacky, ugly and I do not care enough to make it better
+  TagbarOpen
+    wincmd H
+  if  winnr() == 1
+    wincmd w
+  endif
+endfunction
 
 "#2 VIMFILER
 "let vimfiler replace netrw
@@ -362,12 +382,6 @@ function! Debug()
   :silent !make debug
 endfunction
 
-augroup qfixCloseOnEscape
-  autocmd!
-  autocmd FileType qf if mapcheck('<esc>', 'n') ==# '' | nnoremap <buffer><silent> <esc> :cclose<bar>lclose<CR> | endif
-  autocmd FileType qf nnoremap <buffer><silent> <F4> :cclose<bar>lclose<CR> 
-augroup END
-
 :compiler msvc
 set makeprg=make
 set errorformat+=\\\ %#%f(%l)\ :\ %#%t%[A-z]%#\ %m
@@ -375,30 +389,64 @@ set errorformat+=,%f:\ error\ %s:%m
 set errorformat+=,%f:\ fatal\ error\ %s:%m
 autocmd VimResized * :wincmd =
 
-"Force error window to appear at bottom
-autocmd FileType qf wincmd J | :set wrap
-
-function! ToggleQuickFix()
-  if exists("g:qwindow")
-    cclose
-    unlet g:qwindow
-  else
-    try
-      copen 10
-      let g:qwindow = 1
-    catch 
-      echo "No Errors found!"
-    endtry
-  endif
-endfunction
 
 map <F5> :call Run()<cr>
 map <F9> :call Build()<cr>
 map <F11> :call Debug()<cr>
-nmap <script> <silent> <F4> :copen<CR>
+nmap <script> <silent> <F4> :call OpenPrefixWindow()<CR>
+
+" Quickfix
+function! OpenPrefixWindow()
+  let currentWindow = winnr()
+
+  if &buftype == "quickfix"
+    echo "Yes, this is the quickfix window"
+    bprev
+    wincmd w
+  else
+    only
+    copen
+    if (currentWindow == 1)
+      wincmd L
+    else
+      wincmd H
+    endif
+  endif
+
+endfunction
+
+au QuickFixCmdPost * :call OpenPrefixWindow()
 
 command! Clear bufdo Bwipeout!
-command! Todo new | wincmd J | set ft:cpp | r!todo.bat 
+command! Todo vnew | set ft:cpp | r!todo.bat 
+
+"#1 WORKFLOW:
+
+function! WindowRecycle()
+  let wincount = winnr('$')
+
+  if wincount > 2
+    let bufid = bufnr("#")
+    let lastwin = winnr("#")
+    " Swap to 'other' window position
+    if lastwin > 2
+      wincmd H
+    else
+      wincmd L
+    endif
+
+    wincmd q
+    if bufexists(bufid)
+      execute ":buffer " .bufid
+    endif
+  endif
+
+endfunction
+
+augroup bufRecycle
+  au!
+  autocmd WinEnter * call WindowRecycle()
+augroup END
 
 "#1 COLORSCHEME:
 "try loading a color scheme if it exists
@@ -417,4 +465,4 @@ endfunction
 colorscheme home 
 highlight VertSplit guibg=bg guifg=bg
 " end of .vimrc
-
+"
