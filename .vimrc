@@ -14,7 +14,9 @@ let $SWAPDIR = $VIMHOME."/swap//"
 
 augroup vimrc
   autocmd!
-  autocmd BufEnter .vimrc set foldmethod=marker foldcolumn=3 foldmarker=\"\#,\"\#
+  "autocmd BufEnter .vimrc set foldmethod=marker foldcolumn=3 foldmarker=\"\#,\"\#
+  autocmd BufEnter .vimrc set foldmethod=marker foldmarker=\"\#,\"\#
+  
   "autocmd BufEnter .vimrc normal! zM
 augroup END
 
@@ -37,12 +39,14 @@ Plug 'garbas/vim-snipmate'
 Plug 'honza/vim-snippets'
 "Plug 'xolox/vim-easytags'
 Plug 'roblillack/vim-bufferlist'
-"Colorschemes
-Plug 'AlessandroYorba/Despacio'
-Plug 'sherifkandeel/vim-colors' 
 Plug 'pboettch/vim-highlight-cursor-words'
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-repeat'
+"Colorschemes
+Plug 'AlessandroYorba/Despacio'
+Plug 'sherifkandeel/vim-colors' 
+Plug 'kocakosm/hilal'
+
 call plug#end()
 
 "#2 BBYE
@@ -398,9 +402,7 @@ nmap <script> <silent> <F4> :call OpenPrefixWindow()<CR>
 " Quickfix
 function! OpenPrefixWindow()
   let currentWindow = winnr()
-
   if &buftype == "quickfix"
-    echo "Yes, this is the quickfix window"
     bprev
     wincmd w
   else
@@ -412,7 +414,6 @@ function! OpenPrefixWindow()
       wincmd H
     endif
   endif
-
 endfunction
 
 au QuickFixCmdPost * :call OpenPrefixWindow()
@@ -424,7 +425,6 @@ command! Todo vnew | set ft:cpp | r!todo.bat
 
 function! WindowRecycle()
   let wincount = winnr('$')
-
   if wincount > 2
     let bufid = bufnr("#")
     let lastwin = winnr("#")
@@ -440,20 +440,12 @@ function! WindowRecycle()
       execute ":buffer " .bufid
     endif
   endif
-
 endfunction
 
 augroup bufRecycle
   au!
   autocmd WinEnter * call WindowRecycle()
 augroup END
-
-"#1 COLORSCHEME:
-"try loading a color scheme if it exists
-"let expected_theme="coffee"
-"if filereadable($VIMHOME."/colors/".$expected_theme)
-"	colorscheme $expeted_theme
-"endif
 
 " Hide division line no matter the colorscheme 
 autocmd ColorScheme * call OnThemeReload()
