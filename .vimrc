@@ -129,17 +129,18 @@
   nnoremap <C-Down> :silent! let &guifont = substitute(&guifont, ':h\zs\d\+', '\=eval(submatch(0)-1)', 'g')<CR>
 
   " Toggle completion on/off with F2 key
-  nnoremap <C-F2> :call ToggleCompletion()<CR>
-  inoremap <C-F2> <C-o>:call ToggleCompletion()<CR>
+  nnoremap <F2> :call ToggleCompletion()<CR>
 
+  let g:nvimCmpEnabled = v:true
   function! ToggleCompletion()
-    if &omnifunc ==# ''
-      setlocal omnifunc=keywordprg
-      echo 'Completion on'
+    if g:nvimCmpEnabled
+      lua require('cmp').setup{ enabled = false }
+      let g:nvimCmpEnabled = v:false
     else
-      setlocal omnifunc=
-      echo 'Completion off'
+      lua require('cmp').setup{ enabled = true }
+      let g:nvimCmpEnabled = v:true
     endif
+    call UpdateTitleBar()
   endfunction
 
 " -Folding---------------------------------------------------------------------
@@ -279,7 +280,11 @@
   let g:vimprj#currentProjectName = ""
 
   function! UpdateTitleBar()
-    let &titlestring = g:vimprj#currentProjectName . " > " .  expand("%:p")  
+    let l:completionStatus = "OFF"
+    if g:nvimCmpEnabled == v:true
+    let l:completionStatus = "ON"
+    endif
+    let &titlestring = g:vimprj#currentProjectName . " > " .  expand("%:p") . "\t COMPLETION IS " . l:completionStatus
   endfunction
 
   function! CheckProjectVim()
