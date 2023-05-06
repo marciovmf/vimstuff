@@ -1,5 +1,5 @@
 ﻿""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Marciovmf (N)VIM config                                                    "
+" Marciovmf (N)VIM config
 " https://github.com/marciovmf/vimstuff
 " useful resources:
 " 	http://ricostacruz.com/cheatsheets/vimscript
@@ -8,453 +8,319 @@
 "	 set packpath+=~/.vim
 "	 source ~/.vimrc
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-"#1 VIMRC
-let $VIMHOME = $HOME."/.vim"
-let $SWAPDIR = $VIMHOME."/swap//"
 
-augroup vimrc
-  autocmd!
-  "autocmd BufEnter .vimrc set foldmethod=marker foldcolumn=3 foldmarker=\"\#,\"\#
-  autocmd BufEnter .vimrc set foldmethod=marker foldmarker=\"\#,\"\#
+" -VIMRC MISC------------------------------------------------------------------
+  let $VIMHOME = $HOME."/.vim"
+  let $SWAPDIR = $VIMHOME."/swap//"
+  augroup vimrc
+    autocmd!
+    autocmd BufEnter .vimrc set foldmethod=indent
+    autocmd! BufWritePost $MYVIMRC source $MYVIMRC "Automatically source .vimrc when saving it
+    autocmd! BufWritePost "~/.vimrc" source "~/.vimrc" "Automatically source .vimrc when saving it
+
+" -GLOBAL SETTINGS-------------------------------------------------------------
+  set title                   "We can change the tile of the window
+  set noswapfile							"Turn off swap file generation
+  set clipboard=unnamed				"Use the OS clipboard for copying/pasting
+  set nu                      "Show file numbers
+  set foldmethod=syntax
+  set foldlevelstart=99
+  set expandtab               "Never use hard tabs
+  set nojoinspaces            "Avoid double spaces when joining lines
+  set shiftwidth=2            "One tab = 2 spaces (auto indent)
+  set shiftround              "Only ident to multiple of shiftwidth
+  set tabstop=2
+  set softtabstop=2           "Tab key inserts 2 spaces
+  set textwidth=80            "Maximum characters before wrapping
+  set wrap                    "Wrap line after textwidth characters
+  set hlsearch                "Highlight search matches
+  set listchars=tab:»·,nbsp:+,trail:·,extends:→,precedes:←
+  set autoindent
+  set smartindent
+  set ignorecase
+  set smartcase
+  set cindent
+  set exrc                " Enable per directory .exrc file
+
+" -PLUGINS---------------------------------------------------------------------
+  call plug#begin('~/.vim/plugged')
   
-  "autocmd BufEnter .vimrc normal! zM
-augroup END
+  " -FLOAT TERM-------------------
+    Plug 'voldikss/vim-floaterm' " Float term
+    nnoremap   <silent>   <c-F7>    :FloatermNew<CR>
+    tnoremap   <silent>   <c-F7>    <C-\><C-n>:FloatermNew<CR>
+    nnoremap   <silent>   <c-F8>    :FloatermPrev<CR>
+    tnoremap   <silent>   <c-F8>    <C-\><C-n>:FloatermPrev<CR>
+    nnoremap   <silent>   <c-F9>    :FloatermNext<CR>
+    tnoremap   <silent>   <c-F9>    <C-\><C-n>:FloatermNext<CR>
+    nnoremap   <silent>   <c-F12>   :FloatermToggle<CR>
+    tnoremap   <silent>   <c-F12>   <C-\><C-n>:FloatermToggle<CR>
 
-"#1 PLUGINS
-call plug#begin('~/.vim/plugged')
-" Plug 'vim-airline/vim-airline'
-" Plug 'vim-airline/vim-airline-themes'
-"Plug 'kien/ctrlp.vim'
-Plug 'Shougo/unite.vim'
-Plug 'yuttie/comfortable-motion.vim' 	"for better scrolling
-Plug 'Shougo/vimfiler.vim'						"Better netrw
-Plug 'vim-scripts/OmniCppComplete'
-Plug 'majutsushi/tagbar'
-Plug 'ryanoasis/vim-devicons'					"fancy icons.
-Plug 'moll/vim-bbye' 									"keeps window open after killing its last buffer
-" Snipmate and dependencies
-Plug 'MarcWeber/vim-addon-mw-utils'
-Plug 'tomtom/tlib_vim'
-Plug 'garbas/vim-snipmate'
-Plug 'honza/vim-snippets'
-"Plug 'xolox/vim-easytags'
-Plug 'roblillack/vim-bufferlist'
-Plug 'pboettch/vim-highlight-cursor-words'
-Plug 'tpope/vim-surround'
-Plug 'tpope/vim-repeat'
-"Colorschemes
-Plug 'AlessandroYorba/Despacio'
-Plug 'sherifkandeel/vim-colors' 
-Plug 'kocakosm/hilal'
+  " -BBye ------------------------
+    Plug 'moll/vim-bbye'	
+    map <c-k>k :Bdelete!<cr>
+    command! Clear bufdo Bwipeout!
+  
+  " -LSP  ------------------------
+    Plug 'neovim/nvim-lspconfig'                           " Required
+    Plug 'williamboman/mason.nvim', {'do': ':MasonUpdate'} " Optional
+    Plug 'williamboman/mason-lspconfig.nvim'               " Optional
+  
+  " -Autocompletion---------------
+    Plug 'hrsh7th/nvim-cmp'         " Required
+    Plug 'hrsh7th/cmp-nvim-lsp'     " Required
+    Plug 'hrsh7th/cmp-buffer'       " Optional
+    Plug 'hrsh7th/cmp-path'         " Optional
+    Plug 'saadparwaiz1/cmp_luasnip' " Optional
+    Plug 'hrsh7th/cmp-nvim-lua'     " Optional
+  
+  " -Snippets----------------------
+    Plug 'L3MON4D3/LuaSnip'             " Required
+    Plug 'rafamadriz/friendly-snippets' " Optional
+    Plug 'VonHeikemen/lsp-zero.nvim', {'branch': 'v1.x'}
+  
+  " -Telescope---------------------
+    Plug 'nvim-telescope/telescope.nvim'
+    Plug 'nvim-lua/plenary.nvim'
+    Plug 'BurntSushi/ripgrep'
+    Plug 'sharkdp/fd'
+    Plug 'nvim-treesitter/nvim-treesitter'
 
-call plug#end()
+  call plug#end()
 
-"#2 BBYE
-" Kill buffer 
-map <c-k>k :Bdelete!<cr>
+" -Keybindings-----------------------------------------------------------------
+  nmap <c-s> :update<cr> " Save with C-s
+  nnoremap <esc> :nohlsearch<cr>
+  " TEXT SELECTION WITH ARROWS
+  nmap <S-Up> v<Up>
+  nmap <S-Down> v<Down>
+  nmap <S-Left> v<Left>
+  nmap <S-Right> v<Right>
+  vmap <S-Up> <Up>
+  vmap <S-Down> <Down>
+  vmap <S-Left> <Left>
+  vmap <S-Right> <Right>
 
-"#2 TAGBAR
-"open tagbar 
-"noremap ,t :TagbarOpenAutoClose<CR>
-"noremap ,t :TagbarOpen<CR>
-noremap ,t :silent call OpenTagbarHalfWindow()<CR>
-" search for tag
-nnoremap ,, :tag *
+  " LINE DRAGGING WITH ALT ARROWS
+  nnoremap <A-down> :m .+1<CR>==
+  nnoremap <A-up> :m .-2<CR>==
+  inoremap <A-down> <Esc>:m .+1<CR>==gi
+  inoremap <A-up> <Esc>:m .-2<CR>==gi
+  vnoremap <A-down> :m '>+1<CR>gv=gv
+  vnoremap <A-up> :m '<-2<CR>gv=gv
 
-function! OpenTagbarHalfWindow()
-  "I don't know why tagbar default window does not let me resize it
-  " This is a hacky way to keep tagbar window width under control :(
-  " What I mean is: This is hacky, ugly and I do not care enough to make it better
-  TagbarOpen
-    wincmd H
-  if  winnr() == 1
-    wincmd w
-  endif
-endfunction
+  " LINE DRAGGING WITH ALT HJKL:
+  nnoremap <A-j> :m .+1<CR>==
+  nnoremap <A-k> :m .-2<CR>==
+  inoremap <A-j> <Esc>:m .+1<CR>==gi
+  inoremap <A-k> <Esc>:m .-2<CR>==gi
+  vnoremap <A-j> :m '>+1<CR>gv=gv
+  vnoremap <A-k> :m '<-2<CR>gv=gv
 
-"#2 VIMFILER
-"let vimfiler replace netrw
-let g:vimfiler_as_default_explorer = 1
-nmap ,e :VimFilerB <CR>i
-" open file explorer 
-noremap ,f :VimFilerSimple<CR>
+  " Buffer access
+  nnoremap <C-k>g :Telescope grep_string<CR>
+  nnoremap <C-K>f :Telescope find_files<CR>
+  nnoremap <C-k>b :Telescope buffers<CR>
+  nnoremap <C-K>f :Telescope find_files<CR>
+  nnoremap <tab> :buffer *
 
+  " FONT size adjust command
+  nnoremap <C-Up> :silent! let &guifont = substitute(&guifont, ':h\zs\d\+', '\=eval(submatch(0)+1)', 'g')<CR>
+  nnoremap <C-Down> :silent! let &guifont = substitute(&guifont, ':h\zs\d\+', '\=eval(submatch(0)-1)', 'g')<CR>
 
-"#2 OMNI-CPP-COMPLETE
-" reference http://vim.wikia.com/wiki/C%2B%2B_code_completion
-let OmniCpp_NamespaceSearch = 1
-let OmniCpp_GlobalScopeSearch = 1
-let OmniCpp_ShowAccess = 1
-let OmniCpp_ShowPrototypeInAbbr = 1 " show function parameters
-let OmniCpp_MayCompleteDot = 1 " autocomplete after .
-let OmniCpp_MayCompleteArrow = 1 " autocomplete after ->
-let OmniCpp_MayCompleteScope = 1 " autocomplete after ::
-let OmniCpp_DefaultNamespaces = ["std", "_GLIBCXX_STD"]
-" automatically open and close the popup menu / preview window
-au CursorMovedI,InsertLeave * if pumvisible() == 0|silent! pclose|endif
-set completeopt=menuone,menu,longest,preview
+  " Toggle completion on/off with F2 key
+  nnoremap <C-F2> :call ToggleCompletion()<CR>
+  inoremap <C-F2> <C-o>:call ToggleCompletion()<CR>
 
-"#2 AIRLINE
-let g:airline_theme='minimalist'
-let g:airline_powerline_fonts = 1
-
-if !exists('g:airline_symbols')
-  let g:airline_symbols = {}
-endif
-
-let g:comfortable_motion_scroll_down_key = "j"
-let g:comfortable_motion_scroll_up_key = "k"
-noremap <silent> <ScrollWheelDown> :call comfortable_motion#flick(40)<CR>
-noremap <silent> <ScrollWheelUp>   :call comfortable_motion#flick(-40)<CR>
-" unicode symbols
-let g:airline_powerline_fonts = 1
-let g:airline_left_sep = '»'
-let g:airline_left_sep = '▶'
-let g:airline_right_sep = '«'
-let g:airline_right_sep = '◀'
-let g:airline_symbols.linenr = '␊'
-let g:airline_symbols.linenr = '␤'
-let g:airline_symbols.linenr = '¶'
-let g:airline_symbols.branch = '⎇'
-let g:airline_symbols.paste = 'ρ'
-let g:airline_symbols.paste = 'Þ'
-let g:airline_symbols.paste = '∥'
-let g:airline_symbols.whitespace = 'Ξ'
-
-" airline symbols
-let g:airline_left_sep = ''
-let g:airline_left_alt_sep = ''
-let g:airline_right_sep = ''
-let g:airline_right_alt_sep = ''
-let g:airline_symbols.branch = ''
-let g:airline_symbols.readonly = ''
-let g:airline_symbols.linenr = ''
-
-set directory=$SWAPDIR
-
-"#1 MISC SETTINGS:
-syntax on
-filetype plugin on
-filetype indent on
-let mapleader = "\<space>"
-set fileencoding=utf8
-set encoding=utf8
-set termencoding=utf8
-set nocompatible						"Not compatible with VI
-set incsearch								"Enable incremental search
-set number									"Show line numbers
-set cursorline							"Highlight current cursor line	
-set wildmenu								"Display all matching files when we tab complete
-set ignorecase							"By default ignore search case
-set smartcase								"Do not ignore search case if it contains any Upper case
-set mouse=a									"enable mouse interaction (do not abuse it!)
-set nowrap									"Do NOT wrap text around if it is longer than screen width
-set ruler										"Show line and column number under cursor position
-set equalalways							"All windows should have the same size
-set switchbuf=useopen				"use existing window for som type of buffers
-set laststatus=2						"Always show status bar
-set backspace=2							"backspace goes to end of previous line if current is empty
-set shortmess=at						"Short messages
-set showmatch								"highlight matching brackets
-set belloff=all							"set visualbell
-set tw=120									"soft colun nu
-set showcmd									"Show input of an incomplete command
-set completeopt=longest,menuone	"Insert mmac_classicode completion tweaks
-set hidden 									"Allow vim to hide buffers even though they contain modifications
-set path+=** 								"Search down subfolders
-set wildmode=list:list,full	"Provides tab-completion for all file-related tasks
-set hidden									"Hide abandoned buffers
-set clipboard=unnamed				"Use the OS clipboard for copying/pasting
-set wildcharm=<tab>					"so we can use it to activate wildmenu from commands
-set sidescrolloff=5					"begin scrolling n charecters befor right margin
-set nowritebackup						"Write the buffers straight to the original file
-set lazyredraw							"For better performance when replaying macros
-set showbreak=↳							"Show this character when wrapping a line
-set noswapfile							"Turn off swap file generation
-set nobackup								"Turn off backup files
-set autoread								"Autoreaload changed files
-" FORMATTING
-set expandtab								"Never use hard tabs
-set nojoinspaces						"Avoid double spaces when joining lines
-set tabstop=2
-set shiftwidth=2						"One tab = 2 spaces (auto indent)
-set shiftround							"Only ident to multiple of shiftwidth
-set softtabstop=2           "Tab key inserts 2 spaces
-set textwidth=80            "Maximum characters before wrapping
-set wrap                    "Wrap line after textwidth characters
-set hlsearch                "Highlight search matches
-set listchars=tab:»·,nbsp:+,trail:·,extends:→,precedes:←
-set autoindent
-set smartindent
-set cindent
-" NETRW 
-let g:netrw_banner=0				"disable banner
-let g:netrw_browse_split=0	"open in prior window
-let g:netrw_altv=1					"open splits to the right
-let g:netrw_liststyle=3			"tree view
-let g:netrw_list_hide=netrw_gitignore#Hide()
-let g:netrw_list_hide.=',\(^\|\s\s\)\zs\.\S+'
-" DISABLE GUI STUFF im GVIM:
-if has ('gui_running')
-  set guioptions-=m  "remove menu bar`
-  set guioptions-=T  "remove toolbar
-  set guioptions-=r  "remove right-hand scroll bar
-  set guioptions-=L  "remove left-hand scroll bar
-  "set lines=80 columns=108 linespace=0
-  set linespace=0
-  set guifont=Consolas:h10:b:cANSI:qDRAFT
-endif
-
-set title
-augroup dirchange
-  autocmd!
-  "autocmd DirChanged * let &titlestring=v:event['cwd']
-  autocmd BufEnter * let &titlestring = expand("%:p")
-
-augroup END
-" Statusline with current tag name
-set statusline=%<%f\ %h%m%r\ \ \ \ %{tagbar#currenttag('%s','-','f')}\%=\ \ %l,%c%V\ %P
-
-"#1 FOLDING: 
-" https://coderwall.com/p/usd_cw/a-pretty-vim-foldtext-function
-set foldmethod=syntax
-set foldlevelstart=99
-"set fillchars=fold:\  
-
-set foldtext=FoldText()
-function! FoldText()
-  let l:lpadding = &fdc
-  redir => l:signs
-  execute 'silent sign place buffer='.bufnr('%')
-  redir End
-  let l:lpadding += l:signs =~ 'id=' ? 2 : 0
-
-  if exists("+relativenumber")
-    if (&number)
-      let l:lpadding += max([&numberwidth, strlen(line('$'))]) + 1
-    elseif (&relativenumber)
-      let l:lpadding += max([&numberwidth, strlen(v:foldstart - line('w0')), strlen(line('w$') - v:foldstart), strlen(v:foldstart)]) + 1
-    endif
-  else
-    if (&number)
-      let l:lpadding += max([&numberwidth, strlen(line('$'))]) + 1
-    endif
-  endif
-  " expand tabs
-  let l:start = substitute(getline(v:foldstart), '\t', repeat(' ', &tabstop), 'g')
-  let l:end = substitute(substitute(getline(v:foldend), '\t', repeat(' ', &tabstop), 'g'), '^\s*', '', 'g')
-
-  let l:info = ' (' . (v:foldend - v:foldstart) . ')'
-  let l:infolen = strlen(substitute(l:info, '.', 'x', 'g'))
-  let l:width = winwidth(0) - l:lpadding - l:infolen
-
-  let l:separator = ' … '
-  let l:separatorlen = strlen(substitute(l:separator, '.', 'x', 'g'))
-  let l:start = strpart(l:start , 0, l:width - strlen(substitute(l:end, '.', 'x', 'g')) - l:separatorlen)
-  let l:text = l:start . ' … ' . l:end
-
-  return l:text . repeat(' ', l:width - strlen(substitute(l:text, ".", "x", "g"))) . l:info
-endfunction
-
-"#1 SESSION SAVING:
-if has('nvim')
-  set shada=%,'50 
-  set shada+=\"100,:100 
-  set shada+=n~/.nviminfo
-else
-  set vi=%,'50 
-  set vi+=\"100,:100 
-  set vi+=n~/.viminfo
-endif
-
-"#1 NEOVIM SETTINGS AND MAPPINGS
-if has('nvim')
-  set inccommand=nosplit				" live preview of incremental commands
-  tnoremap <Esc> <C-\><C-n> 		" ESC exits terminal mode
-  tnoremap <M-[> <Esc>      		" ALT+ESC sends esc to terminal applicaton
-endif
-
-"#1 CUSTOM SHORTCUTS:
-nnoremap <esc> :nohlsearch<cr>
-" find files under path
-noremap ,o :find .\*<tab>
-" kk exits insert mode
-inoremap kk <esc>
-" jj exits insert mode
-inoremap jj <esc>
-" ERNTER adds new line on normal mode! 
-" (Except on quickfix window)
-:autocmd BufReadPost quickfix nnoremap <buffer> <CR> <CR>
-:autocmd BufReadPost help nnoremap <buffer> <CR> <CR>
-nnoremap <CR> o<esc>
-" CTRL+A selects all lines
-inoremap <C-a> <esc>ggvG$ 
-" CTRL+A selects all lines
-nnoremap <C-a> ggvG$
-" commenting / uncomenting code
-function! UncommentLine()
-  :s/^.*\/\//
-  :noh
-  :norm ==
-endfunction
-
-vnoremap <leader>c :norm I//<cr>
-vnoremap <leader>u :call UncommentLine()<cr>
-nnoremap <leader>c :norm I//<cr>
-nnoremap <leader>u :call UncommentLine()<cr>
-
-" Auto close surounding pairs
-inoremap ( ()<ESC>i
-inoremap { {}<ESC>i
-inoremap [ []<ESC>i
-
-" Search/replace selection
-vnoremap <leader>r ""y:%s/<C-R>=escape(@", '/\')<CR>//gc<Left><Left>
-
-"#2 LINE DRAGGING WITH ALT ARROWS
-nnoremap <A-down> :m .+1<CR>==
-nnoremap <A-up> :m .-2<CR>==
-inoremap <A-down> <Esc>:m .+1<CR>==gi
-inoremap <A-up> <Esc>:m .-2<CR>==gi
-vnoremap <A-down> :m '>+1<CR>gv=gv
-vnoremap <A-up> :m '<-2<CR>gv=gv
-
-"#2 LINE DRAGGING WITH ALT HJKL:
-nnoremap <A-j> :m .+1<CR>==
-nnoremap <A-k> :m .-2<CR>==
-inoremap <A-j> <Esc>:m .+1<CR>==gi
-inoremap <A-k> <Esc>:m .-2<CR>==gi
-vnoremap <A-j> :m '>+1<CR>gv=gv
-vnoremap <A-k> :m '<-2<CR>gv=gv
-
-"#2 SAVE FILE WITH CTRL S:
-" this may require you to put 'stty -ixon' on my .bash_profile 
-nmap <c-s> :update<cr>
-imap <c-s> <esc>:update<cr>:echon "updated"<cr>i
-
-"#2 CYLE BUFFERS AND WINDOWS:
-"cycle through buffers
-nnoremap <tab> :buffer *<tab>
-nnoremap <C-Tab> :wincmd w<CR><esc>					"Cycle windows
-
-"#2 TEXT SELECTION WITH ARROWS:
-" shift+arrows
-nmap <S-Up> v<Up>
-nmap <S-Down> v<Down>
-nmap <S-Left> v<Left>
-nmap <S-Right> v<Right>
-vmap <S-Up> <Up>
-vmap <S-Down> <Down>
-vmap <S-Left> <Left>
-vmap <S-Right> <Right>
-
-"#2 INSERT MODE COPY AND PASTE:
-" Use standard copy/paste/cut shortcuts
-imap <C-v> <Esc>pa
-imap <C-z> <Esc>ua
-
-"#1 TAGGING:
-
-"if has('nvim')
-"	command! MakeTags :call jobstart('ctags -R --c++-kinds=+p --fields=+iaS --extra=+q .')
-"else
-command! MakeTags !ctags -R --c++-kinds=+p --fields=+iaS --extra=+q .
-"endif
-
-set tags=./tags;
-"set tags+=tags;
-if has('win32')
-  set tags+=$VIMHOME\tags\win32
-  set tags+=$VIMHOME\tags\sdl
-endif
-
-autocmd BufReadPost *.cpp,*.c,*.h,*.hpp :silent MakeTags
-autocmd BufWritePost *.cpp,*.c,*.h,*.hpp :silent MakeTags
-
-"#1 COMPILING:
-function! Build()
-  :silent make clean && make
-  :cw
-  :redraw!
-endfunction
-
-function! Run()
-  :silent !make run
-endfunction
-
-function! Debug()
-  :silent !make debug
-endfunction
-
-:compiler msvc
-set makeprg=make
-set errorformat+=\\\ %#%f(%l)\ :\ %#%t%[A-z]%#\ %m
-set errorformat+=,%f:\ error\ %s:%m
-set errorformat+=,%f:\ fatal\ error\ %s:%m
-autocmd VimResized * :wincmd =
-
-
-map <F5> :call Run()<cr>
-map <F9> :call Build()<cr>
-map <F11> :call Debug()<cr>
-nmap <script> <silent> <F4> :call OpenPrefixWindow()<CR>
-
-" Quickfix
-function! OpenPrefixWindow()
-  let currentWindow = winnr()
-  if &buftype == "quickfix"
-    bprev
-    wincmd w
-  else
-    only
-    copen
-    if (currentWindow == 1)
-      wincmd L
+  function! ToggleCompletion()
+    if &omnifunc ==# ''
+      setlocal omnifunc=keywordprg
+      echo 'Completion on'
     else
-      wincmd H
+      setlocal omnifunc=
+      echo 'Completion off'
     endif
-  endif
-endfunction
+  endfunction
 
-au QuickFixCmdPost * :call OpenPrefixWindow()
+" -Folding---------------------------------------------------------------------
+  " https://coderwall.com/p/usd_cw/a-pretty-vim-foldtext-function
+  set foldmethod=syntax
+  set foldlevelstart=99
+  "set fillchars=fold:\  
 
-command! Clear bufdo Bwipeout!
-command! Todo vnew | set ft:cpp | r!todo.bat 
+  set foldtext=FoldText()
+  function! FoldText()
+    let l:lpadding = &fdc
+    redir => l:signs
+    execute 'silent sign place buffer='.bufnr('%')
+    redir End
+    let l:lpadding += l:signs =~ 'id=' ? 2 : 0
 
-"#1 WORKFLOW:
-
-function! WindowRecycle()
-  let wincount = winnr('$')
-  if wincount > 2
-    let bufid = bufnr("#")
-    let lastwin = winnr("#")
-    " Swap to 'other' window position
-    if lastwin > 2
-      wincmd H
+    if exists("+relativenumber")
+      if (&number)
+        let l:lpadding += max([&numberwidth, strlen(line('$'))]) + 1
+      elseif (&relativenumber)
+        let l:lpadding += max([&numberwidth, strlen(v:foldstart - line('w0')), strlen(line('w$') - v:foldstart), strlen(v:foldstart)]) + 1
+      endif
     else
+      if (&number)
+        let l:lpadding += max([&numberwidth, strlen(line('$'))]) + 1
+      endif
+    endif
+    " expand tabs
+    let l:start = substitute(getline(v:foldstart), '\t', repeat(' ', &tabstop), 'g')
+    let l:end = substitute(substitute(getline(v:foldend), '\t', repeat(' ', &tabstop), 'g'), '^\s*', '', 'g')
+
+    let l:info = ' (' . (v:foldend - v:foldstart) . ')'
+    let l:infolen = strlen(substitute(l:info, '.', 'x', 'g'))
+    let l:width = winwidth(0) - l:lpadding - l:infolen
+
+    let l:separator = ' … '
+    let l:separatorlen = strlen(substitute(l:separator, '.', 'x', 'g'))
+    let l:start = strpart(l:start , 0, l:width - strlen(substitute(l:end, '.', 'x', 'g')) - l:separatorlen)
+    let l:text = l:start . ' … ' . l:end
+
+    return l:text . repeat(' ', l:width - strlen(substitute(l:text, ".", "x", "g"))) . l:info
+  endfunction
+
+" -Building--------------------------------------------------------------------
+  compiler msvc
+  
+  function! Build()
+    :silent make clean
+    :silent make
+    :cw
+    :redraw!
+  endfunction
+  
+  function! Clean()
+    :silent make clean
+  endfunction
+  
+  function! SetCMakeMakeprg()
+    set makeprg=cmake
+  endfunction
+  
+  function! SetNMakeMakeprg()
+    set makeprg=nmake
+  endfunction
+  
+  function! SetMakeMakeprg()
+    set makeprg=make
+  endfunction
+  
+  function! Clean()
+    :silent make clean
+  endfunction
+  
+  function! Build()
+    ":silent cmake --build .\build --target clean
+    :silent make 
+    :silent call ShowBuildOutput()
+  endfunction
+  
+  function! Rebuild()
+    :silent call Clean()
+    :silent call Build()
+  endfunction
+  
+  function! ShowBuildOutput()
+    :cw
+    :redraw!
+  endfunction
+  
+  call SetMakeMakeprg() " Use Make as default make program
+  
+  set errorformat+=\\\ %#%f(%l)\ :\ %#%t%[A-z]%#\ %m
+  set errorformat+=,%f:\ error\ %s:%m
+  set errorformat+=,%f:\ fatal\ error\ %s:%m
+  autocmd VimResized * :wincmd =
+  
+  " Rebuild
+  nmap <F9> :silent call Build()<cr>
+  nmap <F10> :silent call Rebuild()<cr>
+  nmap <script> <silent> <F4> :call OpenPrefixWindow()<cr>
+  
+  " Quickfix
+  function! OpenPrefixWindow()
+    let currentWindow = winnr()
+    if &buftype == "quickfix"
+      "bprev
+      "wincmd w
+      wincmd q
+    else
+      copen
       wincmd L
+     " only
+     " copen
+     " if (currentWindow == 1)
+     "   wincmd L
+     " else
+     "   wincmd H
+     " endif
     endif
+  endfunction
+  
+  au QuickFixCmdPost * :call OpenPrefixWindow()
 
-    wincmd q
-    if bufexists(bufid)
-      execute ":buffer " .bufid
+" -TODO extraction-------------------------------------------------------------
+  function! ExtractTodo()
+    silent cgete system('todo.bat') | wincmd L
+  endfunction
+
+  silent command! Todo call ExtractTodo()
+
+" -Colorscheme and font--------------------------------------------------------
+  colo simple
+  set guifont=Fira\ Code:h10
+
+" -Project file loading--------------------------------------------------------
+  let g:project#name = ""
+  let g:vimprj#currentProjectName = ""
+
+  function! UpdateTitleBar()
+    let &titlestring = g:vimprj#currentProjectName . " > " .  expand("%:p")  
+  endfunction
+
+  function! CheckProjectVim()
+    let file_path = getcwd() . "/project.vim"
+    if filereadable(file_path)
+      execute "source" file_path
+      let g:vimprj#currentProjectName = "[" . g:project#name . "]"
+    else
+      let g:vimprj#currentProjectName = getcwd()
     endif
-  endif
-endfunction
+    call UpdateTitleBar()
+  endfunction
 
-augroup bufRecycle
-  au!
-  autocmd WinEnter * call WindowRecycle()
-augroup END
+  augroup dirchange
+    autocmd!
+    autocmd! dirChanged * call CheckProjectVim()
+    autocmd BufEnter * call UpdateTitleBar()
+  augroup END
 
-" Hide division line no matter the colorscheme 
-autocmd ColorScheme * call OnThemeReload()
+  call CheckProjectVim()
 
-function! OnThemeReload()
-  highlight VertSplit guibg=bg guifg=bg
-  set fillchars+=vert:\ 
-endfunction
-colorscheme home 
-highlight VertSplit guibg=bg guifg=bg
-" end of .vimrc
-"
+"--LUA based configurations----------------------------------------------------
+  lua <<EOF
+  -- LSP-ZERO
+  local lsp = require('lsp-zero').preset({
+  name = 'minimal',
+  set_lsp_keymaps = true,
+  manage_nvim_cmp = true,
+  suggest_lsp_servers = false,
+  })
+
+local cmp = require('cmp')
+
+lsp.setup_nvim_cmp({
+  mapping = lsp.defaults.cmp_mappings({
+  -- Do not capture TAB key!
+    ['<Tab>'] = vim.NIL, 
+  })
+})
+
+  lsp.setup()
+EOF
+
+" End of vimrc

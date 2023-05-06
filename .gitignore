@@ -1,3 +1,2 @@
-*
-!.vimrc
-!.gitignore
+!.*
+.vim/plugged/
