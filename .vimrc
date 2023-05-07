@@ -280,9 +280,24 @@
   function! UpdateTitleBar()
     let l:completionStatus = ""
     if g:nvimCmpEnabled == v:true
-    let l:completionStatus = "\t[" . nr2char(0x26A1) . "Autocompletion enabled]"
+      let l:completionStatus = "\t[" . nr2char(0x26A1) . "Autocompletion enabled]"
     endif
-    let &titlestring = g:vimprj#currentProjectName . " :: " . nr2char(0x1F5D2) . expand("%t") . l:completionStatus
+
+let iconList = { 'qf':'🔧', 'help':'🎓', 'netrw':'📁', 'default':'🗒️', '':'❓' }
+
+    let icon = iconList["default"]
+    if has_key(iconList, &filetype)
+      let icon = iconList[&filetype]
+    endif
+
+    let l:fileName = expand("%t")
+    if len(l:fileName) == 0
+      let l:fileName = &filetype
+    endif
+
+    let l:fileName = icon . l:fileName
+
+    let &titlestring = g:vimprj#currentProjectName . " :: " . l:fileName . l:completionStatus
   endfunction
 
   function! CheckProjectVim()
