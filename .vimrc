@@ -120,6 +120,7 @@
   nnoremap <C-k>b :Telescope buffers<CR>
   nnoremap <C-K>f :Telescope find_files<CR>
   nnoremap <tab> :buffer *
+  nnoremap <C-K>h :ClangdSwitchSourceHeader<CR>
 
   " FONT size adjust command
   nnoremap <C-Up> :silent! let &guifont = substitute(&guifont, ':h\zs\d\+', '\=eval(submatch(0)+1)', 'g')<CR>
