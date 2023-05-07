@@ -1,12 +1,6 @@
 ﻿""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Marciovmf (N)VIM config
 " https://github.com/marciovmf/vimstuff
-" useful resources:
-" 	http://ricostacruz.com/cheatsheets/vimscript
-" NOTE: if running neovim, set init.vim as follows:
-"	 set runtimepath+=~/vimfiles,~/vimfiles/after
-"	 set packpath+=~/.vim
-"	 source ~/.vimrc
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " -VIMRC MISC------------------------------------------------------------------
@@ -40,7 +34,10 @@
   set ignorecase
   set smartcase
   set cindent
-  set exrc                " Enable per directory .exrc file
+  set exrc                    "Enable per directory .exrc file
+  set laststatus=2						"Always show status bar
+  set cursorline              "Enable highlighting the cursor line
+  set statusline=%<%f\ %h%m%r%=%-14.(%l,%c%V%)\ %P\ %y\ %(\ %m%)\ %{&ft}\ \ %l:\ %L,\ col:%c\ %s
 
 " -PLUGINS---------------------------------------------------------------------
   call plug#begin('~/.vim/plugged')
@@ -59,7 +56,7 @@
   " -BBye ------------------------
     Plug 'moll/vim-bbye'	
     map <c-k>k :Bdelete!<cr>
-    command! Clear bufdo Bwipeout!
+    command! Clear :%bd!
   
   " -LSP  ------------------------
     Plug 'neovim/nvim-lspconfig'                           " Required
@@ -280,20 +277,20 @@
   let g:vimprj#currentProjectName = ""
 
   function! UpdateTitleBar()
-    let l:completionStatus = "OFF"
+    let l:completionStatus = ""
     if g:nvimCmpEnabled == v:true
-    let l:completionStatus = "ON"
+    let l:completionStatus = "\t[" . nr2char(0x26A1) . "Autocompletion enabled]"
     endif
-    let &titlestring = g:vimprj#currentProjectName . " > " .  expand("%:p") . "\t COMPLETION IS " . l:completionStatus
+    let &titlestring = g:vimprj#currentProjectName . " :: " . nr2char(0x1F5D2) . expand("%t") . l:completionStatus
   endfunction
 
   function! CheckProjectVim()
     let file_path = getcwd() . "/project.vim"
     if filereadable(file_path)
       execute "source" file_path
-      let g:vimprj#currentProjectName = "[" . g:project#name . "]"
+      let g:vimprj#currentProjectName = g:project#name
     else
-      let g:vimprj#currentProjectName = getcwd()
+      let g:vimprj#currentProjectName = nr2char(0x1F4C1) . getcwd()
     endif
     call UpdateTitleBar()
   endfunction
@@ -306,6 +303,7 @@
 
   call CheckProjectVim()
 
+let g:cmp_widget_border = 'rounded'
 "--LUA based configurations----------------------------------------------------
   lua <<EOF
   -- LSP-ZERO
@@ -314,6 +312,7 @@
   set_lsp_keymaps = true,
   manage_nvim_cmp = true,
   suggest_lsp_servers = false,
+  virtual_text = true
   })
 
 local cmp = require('cmp')
@@ -326,6 +325,17 @@ lsp.setup_nvim_cmp({
 })
 
   lsp.setup()
+
+vim.diagnostic.config({
+  -- Use keybinding 'gl' to display diagnostics if this is disabled
+  virtual_text = false, 
+  signs = true,
+  update_in_insert = false,
+  underline = true,
+  severity_sort = false,
+  float = true,
+})
+
 EOF
 
 " End of vimrc
