@@ -15,6 +15,8 @@ IF %ERRORLEVEL% == 0 (
   mklink /h %USERPROFILE%\.vimrc .vimrc
 )
 
+if NOT EXIST %LOCALAPPDATA%\nvim mkdir %LOCALAPPDATA%\nvim
+
 REM ---------------------init.vim--------------------------
 fsutil hardlink list init.vim|findstr "%LOCALAPPDATA:~2%\nvim\init\.vim" 2>&1>NUL
 IF %ERRORLEVEL% == 0 (
