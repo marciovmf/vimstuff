@@ -141,6 +141,24 @@
     call UpdateTitleBar()
   endfunction
 
+  " Toggle LSP on/off with F2 key
+  nnoremap <F3> :call ToggleLSP()<CR>
+  let g:nvimLSPEnabled = v:true
+  let g:nvimPrevCMPEnabledValue = g:nvimCmpEnabled
+  function! ToggleLSP()
+    if g:nvimLSPEnabled
+      :LspStop
+      let g:nvimLSPEnabled = v:false
+      let g:nvimPrevCMPEnabledValue = g:nvimCmpEnabled 
+      let g:nvimCmpEnabled = v:false
+    else
+      :LspStart
+      let g:nvimLSPEnabled = v:true
+      let g:nvimCmpEnabled = g:nvimPrevCMPEnabledValue
+    endif
+    call UpdateTitleBar()
+  endfunction
+
 " -Folding---------------------------------------------------------------------
   " https://coderwall.com/p/usd_cw/a-pretty-vim-foldtext-function
   set foldmethod=syntax
@@ -280,10 +298,14 @@
   function! UpdateTitleBar()
     let l:completionStatus = ""
     if g:nvimCmpEnabled == v:true
-      let l:completionStatus = "\t[" . nr2char(0x26A1) . "Autocompletion enabled]"
+      let l:completionStatus = "\t[ 🧩 Autocompletion enabled ]"
     endif
 
-let iconList = { 'qf':'🔧', 'help':'🎓', 'netrw':'📁', 'default':'🗒️', '':'❓' }
+    if g:nvimLSPEnabled == v:true
+      let l:completionStatus .= "\t[ 🧩 LSP enabled ]"
+    endif
+
+    let iconList = { 'qf':'🔧', 'help':'🎓', 'netrw':'📁', 'default':'🗒️', '':'❓' }
 
     let icon = iconList["default"]
     if has_key(iconList, &filetype)
