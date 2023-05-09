@@ -13,6 +13,7 @@
     autocmd! BufWritePost "~/.vimrc" source "~/.vimrc" "Automatically source .vimrc when saving it
 
 " -GLOBAL SETTINGS-------------------------------------------------------------
+  set encoding=UTF-8 
   set title                   "We can change the tile of the window
   set noswapfile							"Turn off swap file generation
   set clipboard=unnamed				"Use the OS clipboard for copying/pasting
@@ -42,6 +43,11 @@
 " -PLUGINS---------------------------------------------------------------------
   call plug#begin('~/.vim/plugged')
   
+  " -VIMFILER---------------------
+    Plug 'Shougo/unite.vim'
+    Plug 'Shougo/vimfiler.vim'
+    let g:vimfiler_as_default_explorer = 1
+
   " -FLOAT TERM-------------------
     Plug 'voldikss/vim-floaterm' " Float term
     nnoremap   <silent>   <c-F7>    :FloatermNew<CR>
