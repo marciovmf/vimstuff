@@ -298,7 +298,7 @@
   function! UpdateTitleBar()
     let l:completionStatus = ""
     if g:nvimCmpEnabled == v:true
-      let l:completionStatus = "\t[ 🧩 Autocompletion enabled ]"
+      let l:completionStatus = "\t[ ⚡ Autocompletion enabled ]"
     endif
 
     if g:nvimLSPEnabled == v:true
@@ -323,12 +323,27 @@
   endfunction
 
   function! CheckProjectVim()
+    let g:vimprj#currentProjectName = '' 
     let file_path = getcwd() . "/project.vim"
     if filereadable(file_path)
       execute "source" file_path
       let g:vimprj#currentProjectName = g:project#name
     else
-      let g:vimprj#currentProjectName = nr2char(0x1F4C1) . getcwd()
+      " check for cryengine
+      if filereadable("cryengine.cryengine")
+        let g:vimprj#currentProjectName = "👁️ CryEngine @ " . getcwd() . "> "
+      endif
+
+      "Check for cryproject
+      if !empty(glob('*.cryproject'))
+        let filename = substitute(glob('*.cryproject'), '\.cryproject$', '', '')
+        let g:vimprj#currentProjectName .= '🎮 ' . filename . "> "
+      endif
+
+      "If it's not a custom project, nor cryengine or a cryproject, it's just a folder" 
+      if len(g:vimprj#currentProjectName) == 0
+        let g:vimprj#currentProjectName = '📁' . getcwd()
+      endif
     endif
     call UpdateTitleBar()
   endfunction
