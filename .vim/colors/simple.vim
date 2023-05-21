@@ -74,7 +74,7 @@ hi LineNr guifg=#999999 guibg=#696969
 hi NonText guifg=#f8e71c guibg=#696969
 hi Comment guifg=#f8e71c
 hi SpecialComment guifg=#f8e71c guibg=NONE
-hi CursorLine guibg=#454545
+hi CursorLine guibg=#0000DD
 "hi CursorLine guibg=#5555BB
 hi TabLineFill gui=NONE guibg=#454545
 hi TabLine guifg=#999999 guibg=#454545 gui=NONE
@@ -82,4 +82,5 @@ hi StatusLine gui=bold guibg=#454545 guifg=#ffffff
 hi StatusLineNC gui=NONE guibg=#696969 guifg=#ffffff
 hi Search guibg=#f8e71c guifg=#ffffff
 hi VertSplit gui=NONE guifg=#454545 guibg=NONE
-hi Visual gui=NONE guibg=#454545
+"hi Visual gui=NONE guibg=#454545
+hi Visual gui=NONE guibg=#0000DD
