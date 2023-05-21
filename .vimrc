@@ -42,7 +42,14 @@
 
 " -PLUGINS---------------------------------------------------------------------
   call plug#begin('~/.vim/plugged')
-  
+
+  " -CURSOR WORD------------------
+    Plug 'xiyaowong/nvim-cursorword'
+    let g:cursorword_disable_at_startup = v:true
+    let g:cursorword_min_width = 3
+    let g:cursorword_max_width = 50
+    hi default CursorWord cterm=underline gui=underline
+
   " -VIMFILER---------------------
     Plug 'Shougo/unite.vim'
     Plug 'Shougo/vimfiler.vim'
@@ -58,28 +65,30 @@
     tnoremap   <silent>   <c-F9>    <C-\><C-n>:FloatermNext<CR>
     nnoremap   <silent>   <c-F12>   :FloatermToggle<CR>
     tnoremap   <silent>   <c-F12>   <C-\><C-n>:FloatermToggle<CR>
+  " - NETMAN -----------------------
+    Plug 'miversen33/netman.nvim'
 
   " -BBye ------------------------
     Plug 'moll/vim-bbye'	
     map <c-k>k :Bdelete!<cr>
     command! Clear :%bd!
-  
+
   " -LSP  ------------------------
     Plug 'neovim/nvim-lspconfig'                           " Required
     Plug 'williamboman/mason.nvim', {'do': ':MasonUpdate'} " Optional
     Plug 'williamboman/mason-lspconfig.nvim'               " Optional
-  
+
   " -Autocompletion---------------
     Plug 'hrsh7th/nvim-cmp'         " Required
     Plug 'hrsh7th/cmp-nvim-lsp'     " Required
     Plug 'hrsh7th/cmp-buffer'       " Optional
     Plug 'hrsh7th/cmp-path'         " Optional
-    Plug 'saadparwaiz1/cmp_luasnip' " Optional
+    "Plug 'saadparwaiz1/cmp_luasnip' " Optional
     Plug 'hrsh7th/cmp-nvim-lua'     " Optional
   
   " -Snippets----------------------
     Plug 'L3MON4D3/LuaSnip'             " Required
-    Plug 'rafamadriz/friendly-snippets' " Optional
+    "Plug 'rafamadriz/friendly-snippets' " Optional
     Plug 'VonHeikemen/lsp-zero.nvim', {'branch': 'v1.x'}
   
   " -Telescope---------------------
@@ -88,6 +97,8 @@
     Plug 'BurntSushi/ripgrep'
     Plug 'sharkdp/fd'
     Plug 'nvim-treesitter/nvim-treesitter'
+    "Plug 'nvim-tree/nvim-web-devicons'
+    "Plug 'ryanoasis/vim-devicons'
 
   call plug#end()
 
@@ -295,7 +306,7 @@
 
 " -Colorscheme and font--------------------------------------------------------
   colo simple
-  set guifont=Fira\ Code:h10
+  set guifont=FiraCode\ Nerd\ Font:h10
 
 " -Project file loading--------------------------------------------------------
   let g:project#name = ""
@@ -339,13 +350,55 @@
     call UpdateTitleBar()
   endfunction
 
+  function! LoadProjectCommand(path)
+    Clear
+    execute "cd " . a:path
+    let sessionFile = a:path . "/Session.vim"
+    execute "source " . sessionFile
+    call CheckProjectVim()
+  endfunction
+
   augroup dirchange
     autocmd!
     autocmd! dirChanged * call CheckProjectVim()
     autocmd BufEnter * call UpdateTitleBar()
   augroup END
 
+  command! -nargs=1 Project :silent! call LoadProjectCommand(<q-args>)
+
   call CheckProjectVim()
+
+
+"--Skeleton files -------------------------------------------------------------
+function! UpdateSkeletonBuffer(extension)
+  "Header file
+  let bufname = substitute(fnamemodify(bufname('%'), ':t'), '[^[:alnum:]]', '_', 'g')
+  if a:extension == "h"
+    silent! execute '%s/%header_name%/' . toupper(bufname) . '/g'
+    let l:namespace = g:project#defaultNamespace
+    if len(l:namespace) == 0
+      let l:namespace = "my_name_space"
+    endif
+    silent! execute '%s/%namespace%/' . l:namespace . '/g'
+
+    if search('%cursor%', 'c') > 0
+      normal diW
+    endif
+    silent! execute '%s/%%/' . g:project#defaultNamespace . '/g'
+  endif
+
+  " set the buffer as modified. We don't want to get confused thinking it's an existing file
+  call setbufvar(bufnr(), '&modified', 1)
+
+endfunction
+
+augroup skeletons
+  au!
+  autocmd BufNewFile *.* silent! execute '0r ~/.vim/templates/skeleton.'.expand("<afile>:e") | call UpdateSkeletonBuffer(expand("<afile>:e"))
+  autocmd BufNewFile CMakeLists.txt execute '0r ~/.vim/templates/CMakeLists.txt' | call UpdateSkeletonBuffer("<afile>:e")
+  autocmd BufNewFile project.vim execute '0r ~/.vim/templates/project.vim' | call UpdateSkeletonBuffer("<afile>:e")
+augroup END
+
 
 let g:cmp_widget_border = 'rounded'
 "--LUA based configurations----------------------------------------------------
