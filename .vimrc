@@ -1,7 +1,9 @@
 ﻿""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Marciovmf (N)VIM config
 " https://github.com/marciovmf/vimstuff
-" v2.0
+" @version: 2.01
+" @changelog:
+" - fold metod for /**/ displays the content of the first non-empty line
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " -NEOVIDE---------------------------------------------------------------------
 
@@ -23,8 +25,6 @@
   let $SWAPDIR = $VIMHOME."/swap//"
   augroup vimrc
     autocmd!
-    autocmd BufEnter */.vimrc set foldmethod=indent
-    autocmd BufLeave */.vimrc set foldmethod=syntax
     autocmd! BufWritePost $MYVIMRC source $MYVIMRC "Automatically source .vimrc when saving it
     autocmd! BufWritePost "~/.vimrc" source "~/.vimrc" "Automatically source .vimrc when saving it
 
@@ -204,49 +204,13 @@
     call UpdateTitleBar()
   endfunction
 
-" -Folding v1------------------------------------------------------------------
-" This function defines a custom display format for folded lines in Vim. 
-" It enhances readability by providing context about the content of each fold, 
-" including the starting and ending lines within the fold and the number of lines 
-" in the folded section.
-"
-" Function Behavior:
-" - If the fold starts with `/*` (typically indicating a comment block), 
-"   the function finds the first non-empty line within the fold and uses it 
-"   as the display text for the fold.
-" - Otherwise, it uses the first line of the fold as the starting text.
-" - Displays the number of lines folded at the end in parentheses.
-" - Handles line numbers, relative numbers, and signs by adjusting padding as needed 
-"   to ensure the fold text aligns well in the editor window.
-"
-" Process:
-" 1. Calculates padding (`lpadding`) to adjust for line numbers, relative numbers, 
-"    and signs (like error markers) in the fold column.
-" 2. Retrieves the first line of the fold (`l:start`) and replaces tabs with spaces 
-"    for a cleaner display.
-" 3. Checks if the fold starts with `/*`. If so, it searches through the fold for the 
-"    first non-empty line and uses this line as the starting display text.
-" 4. Retrieves the last line of the fold (`l:end`) and removes leading whitespace.
-" 5. Calculates the available display width (`l:width`) by subtracting padding and 
-"    the length of the fold information (number of lines).
-" 6. Truncates `l:start` if necessary to fit within the available width and combines 
-"    it with `l:end` using a separator (`…`) to indicate omitted content.
-" 7. Returns the final fold text, including padding and line count, ensuring the 
-"    display fits within the editor's window width.
-"
-" Example Output:
-" - A fold might display as:
-"   "This is the first line of the fold … last line of the fold (5)"
-"   This includes the first and last lines within the fold, separated by ellipses, 
-"   with the total number of lines in the fold shown at the end.
-"
-" Note:
-" - Ensure that 'set foldtext=FoldText()' is in your Vim configuration to enable 
-"   this custom fold display.
-" - This function is designed for use with syntax-based folding ('set foldmethod=syntax').
-function! FoldText()
+" Based on https://coderwall.com/p/usd_cw/a-pretty-vim-foldtext-function
+  set foldtext=FoldText()
 
+function! FoldText()
+  " Calculate padding for the fold text
   let l:lpadding = &fdc
+  let l:extra_padding = 0
   redir => l:signs
   execute 'silent sign place buffer='.bufnr('%')
   redir End
@@ -264,36 +228,61 @@ function! FoldText()
     endif
   endif
 
-  " Determine fold display text based on whether fold starts with "/*"
+  " Calculate the info text (fold size) and its length
+  let l:info = ' (' . (v:foldend - v:foldstart + 1) . ')'
+  let l:infolen = strlen(l:info)
+
+  " Initialize variables for start and end lines of the fold
   let l:start = substitute(getline(v:foldstart), '\t', repeat(' ', &tabstop), 'g')
+  let l:end = substitute(getline(v:foldend), '\t', repeat(' ', &tabstop), 'g')
+  let l:custom_fold_display = 0
+
+  " Check if the fold starts with "/*" to apply specific formatting
   if l:start =~ '^\s*/\*'
-    " Loop to find the first non-empty line within the fold
-    let l:first_non_empty = ''
-    for l:i in range(v:foldstart + 1, v:foldend)
-      let l:line = substitute(getline(l:i), '\t', repeat(' ', &tabstop), 'g')
-      if l:line !~ '^\s*$'  " Check if the line is not empty
-        let l:first_non_empty = l:line
+    " Find the first non-empty line within the fold after the start line
+    let l:found = ''
+    for l:line in range(v:foldstart + 1, v:foldend)
+      let l:current_line = substitute(getline(l:line), '\t', repeat(' ', &tabstop), 'g')
+      if l:current_line !~ '^\s*$' " Check for a non-empty line
+        let l:found = l:current_line
         break
       endif
     endfor
-    if l:first_non_empty != ''
-      let l:start = l:first_non_empty
+
+    " If a non-empty line was found, format it for display
+    if l:found != ''
+      " Remove leading "*" if present, along with any leading whitespace
+      let l:found = substitute(l:found, '^\s*\*\s*', '', '')
+
+      " Format the start line to show "/* <first non-empty line> */"
+      let l:start = '/* ' . l:found . ' */'
+      let l:end = ''
+      let l:extra_padding = 2
+      let l:custom_fold_display = 1
     endif
   endif
 
-  " Process the end line and other settings as before
-  let l:end = substitute(substitute(getline(v:foldend), '\t', repeat(' ', &tabstop), 'g'), '^\s*', '', 'g')
-  let l:info = ' (' . (v:foldend - v:foldstart) . ')'
-  let l:infolen = strlen(substitute(l:info, '.', 'x', 'g'))
-  let l:width = winwidth(0) - l:lpadding - l:infolen
+  " Calculate the maximum width available for fold text, including padding for `(nn)`
+  let l:width = winwidth(0) - l:lpadding - l:extra_padding
 
-  let l:separator = ' … '
-  let l:separatorlen = strlen(substitute(l:separator, '.', 'x', 'g'))
-  let l:start = strpart(l:start , 0, l:width - strlen(substitute(l:end, '.', 'x', 'g')) - l:separatorlen)
-  let l:text = l:start . ' … ' . l:end
+  " Handle fold text formatting separately for custom `/* ... */` folds
+  if l:custom_fold_display
+    " Truncate `l:start` to fit within the width, leaving exact space for `(nn)`
+    let l:width_adjusted = l:width - l:infolen - 1
+    let l:start = strpart(l:start, 0, l:width_adjusted)
+    let l:text = l:start
+  else
+    " For non-`/* ... */` folds, use the standard "start … end" format
+    let l:separator = ' … '
+    let l:separatorlen = strlen(l:separator)
+    let l:start = strpart(l:start, 0, l:width - l:infolen - l:separatorlen - strlen(l:end) - 1)
+    let l:text = l:start . l:separator . l:end
+  endif
 
-  return l:text . repeat(' ', l:width - strlen(substitute(l:text, ".", "x", "g"))) . l:info
+  " Return the formatted fold text with line count right-aligned
+  return l:text . repeat(' ', l:width - strlen(l:text) - l:infolen) . l:info
 endfunction
+
 
 " -Building--------------------------------------------------------------------
   compiler msvc
