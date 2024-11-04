@@ -6,7 +6,7 @@ syntax reset
 let g:colors_name = "simple_dark"
 set background=dark
 set t_Co=256
-hi Normal guifg=#DDDDDD ctermbg=NONE guibg=#696969 gui=NONE
+hi Normal guifg=#FFFFFF ctermbg=NONE guibg=#696969 gui=NONE
 
 hi cssClassName guifg=#eeeeee guibg=NONE
 hi cssClassNameDot guifg=#eeeeee guibg=NONE
@@ -25,7 +25,7 @@ hi Error guifg=#cccccc guibg=NONE
 hi DiffDelete guifg=#cccccc guibg=NONE
 hi GitGutterDelete guifg=#cccccc guibg=NONE
 hi GitGutterChangeDelete guifg=#cccccc guibg=NONE
-hi Identifier guifg=#cccccc guibg=NONE
+hi Identifier guifg=#FFFFFF guibg=NONE
 hi Repeat guifg=#cccccc guibg=NONE
 hi DiffAdd guifg=#cccccc guibg=NONE
 hi GitGutterAdd guifg=#cccccc guibg=NONE
@@ -38,32 +38,37 @@ hi Special guifg=#ffffff guibg=NONE
 hi Label guifg=#ffffff guibg=NONE
 hi Delimiter guifg=#ffffff guibg=NONE
 hi CursorLineNR guifg=#ffffff guibg=NONE
-hi Define guifg=#ffffff guibg=NONE
+hi Define guifg=#ffffff guibg=NONE gui=bold
 hi MoreMsg guifg=#ffffff guibg=NONE
 hi Tag guifg=#ffffff guibg=NONE 
 hi MatchParen guifg=#ffffff guibg=NONE
 hi DiffChange guifg=#ffffff guibg=NONE
 hi GitGutterChange guifg=#ffffff guibg=NONE
-hi Function guifg=#bbbbbb guibg=NONE
+hi Function guifg=#FFFFFF guibg=NONE gui=bold
 hi Directory guifg=#eeeeee guibg=NONE
 hi markdownLinkText guifg=#eeeeee guibg=NONE
 hi javaScriptBoolean guifg=#eeeeee guibg=NONE
 hi Storage guifg=#eeeeee guibg=NONE
 
-hi Conditional guifg=#FFFFFF guibg=NONE
 hi Keyword guifg=#FFFFFF guibg=NONE gui=bold
-hi Statement guifg=#FFFFFF guibg=NONE gui=bold
-hi Constant guifg=#FFFFFF guibg=NONE gui=bold
-hi Number guifg=#2BC6DF guibg=NONE
+hi Conditional guifg=#FFFFFF guibg=NONE
+hi Include guifg=#FFFFFF guibg=NONE
+hi Number guifg=#FFFFC0 guibg=NONE
+"hi Constant guifg=#9DE36A  guibg=NONE
+hi Constant guifg=#FFFFFF  guibg=NONE gui=bold
+hi Statement guifg=#FFFFFF guibg=NONE
+hi PreCondit guifg=#FFFFFF guibg=NONE
+hi Macro guifg=#FFFFFF guibg=NONE gui=bold
+"hi Macro guifg=#FFD840 guibg=NONE
 hi Operator guifg=#BDEFF6 guibg=NONE
-hi Type guifg=#BDEFF6 guibg=NONE gui=bold
+"hi Type guifg=#BDEFF6 guibg=NONE
+hi Type guifg=#C4F8FF guibg=NONE
+
+
 hi MatchParen cterm=bold guifg=#2BC6DF gui=bold
 
-hi Macro guifg=#7ED321 guibg=NONE
-hi PreCondit guifg=#7ED321 guibg=NONE
 
 hi String guifg=#60A9FA guibg=NONE gui=italic
-hi Include guifg=#7ED321 guibg=NONE
 
 hi PmenuSel guifg=#ffffff guibg=#454545
 hi PMenu guifg=#cccccc guibg=NONE
@@ -72,7 +77,8 @@ hi SignColumn guibg=#696969
 hi Title guifg=#ffffff
 hi LineNr guifg=#999999 guibg=#696969
 hi NonText guifg=#f8e71c guibg=#696969
-hi Comment guifg=#f8e71c
+hi Comment guifg=#ADB2A0
+
 hi SpecialComment guifg=#f8e71c guibg=NONE
 hi CursorLine guibg=#0000DD
 "hi CursorLine guibg=#5555BB

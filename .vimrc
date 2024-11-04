@@ -2,19 +2,36 @@
 " Marciovmf (N)VIM config
 " https://github.com/marciovmf/vimstuff
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" -NEOVIDE---------------------------------------------------------------------
+
+  "let g:neovide_cursor_vfx_mode = ""
+  let g:neovide_cursor_animate_command_line = v:true
+  let g:neovide_scroll_animation_length = 0.3
+  let g:neovide_cursor_vfx_particle_lifetime = 2.0
+  let g:neovide_cursor_vfx_particle_density = 40.0
+  let g:neovide_cursor_vfx_particle_speed = 20.0
+  
+  function! ToggleFullscreen()
+    let g:neovide_fullscreen = !g:neovide_fullscreen
+  endfunction
+
+  noremap   <silent>   <A-CR>   :silent call ToggleFullscreen()<CR>
 
 " -VIMRC MISC------------------------------------------------------------------
   let $VIMHOME = $HOME."/.vim"
   let $SWAPDIR = $VIMHOME."/swap//"
   augroup vimrc
     autocmd!
-    autocmd BufEnter .vimrc set foldmethod=indent
+    autocmd BufEnter */.vimrc set foldmethod=indent
+    autocmd BufLeave */.vimrc set foldmethod=syntax
     autocmd! BufWritePost $MYVIMRC source $MYVIMRC "Automatically source .vimrc when saving it
     autocmd! BufWritePost "~/.vimrc" source "~/.vimrc" "Automatically source .vimrc when saving it
 
 " -GLOBAL SETTINGS-------------------------------------------------------------
+  filetype plugin on
   set encoding=UTF-8 
   set title                   "We can change the tile of the window
+  set syntax
   set noswapfile							"Turn off swap file generation
   set clipboard=unnamed				"Use the OS clipboard for copying/pasting
   set nu                      "Show file numbers
@@ -29,7 +46,8 @@
   set textwidth=80            "Maximum characters before wrapping
   set wrap                    "Wrap line after textwidth characters
   set hlsearch                "Highlight search matches
-  set listchars=tab:»·,nbsp:+,trail:·,extends:→,precedes:←
+  "'set listchars=tab:»·,nbsp:+,trail:·,extends:→,precedes:←
+  set listchars=tab:»\ ,extends:›,precedes:‹,nbsp:·,trail:·
   set autoindent
   set smartindent
   set ignorecase
@@ -42,6 +60,9 @@
 
 " -PLUGINS---------------------------------------------------------------------
   call plug#begin('~/.vim/plugged')
+
+  " -SMOOTH SCROLLING-------------
+  "  Plug 'joeytwiddle/sexy_scroller.vim'
 
   " -CURSOR WORD------------------
     Plug 'xiyaowong/nvim-cursorword'
@@ -65,8 +86,6 @@
     tnoremap   <silent>   <c-F9>    <C-\><C-n>:FloatermNext<CR>
     nnoremap   <silent>   <c-F12>   :FloatermToggle<CR>
     tnoremap   <silent>   <c-F12>   <C-\><C-n>:FloatermToggle<CR>
-  " - NETMAN -----------------------
-    Plug 'miversen33/netman.nvim'
 
   " -BBye ------------------------
     Plug 'moll/vim-bbye'	
@@ -97,8 +116,16 @@
     Plug 'BurntSushi/ripgrep'
     Plug 'sharkdp/fd'
     Plug 'nvim-treesitter/nvim-treesitter'
-    "Plug 'nvim-tree/nvim-web-devicons'
-    "Plug 'ryanoasis/vim-devicons'
+    Plug 'nvim-tree/nvim-web-devicons'
+    Plug 'ryanoasis/vim-devicons'
+
+  " -Colorscheme-------------------
+  Plug 'ewk/blue_in_green'
+  Plug 'habamax/vim-habamax'
+  Plug 'Alligator/accent.vim'
+  Plug 'jacoborus/tender.vim'
+  Plug 'kxzk/skull-vim'
+
 
   call plug#end()
 
@@ -132,8 +159,8 @@
   vnoremap <A-k> :m '<-2<CR>gv=gv
 
   " Buffer access
-  nnoremap <C-k>g :Telescope grep_string<CR>
-  nnoremap <C-K>f :Telescope find_files<CR>
+  nnoremap <C-k>g :Telescope live_grep<CR>
+  nnoremap <C-K>s :Telescope lsp_document_symbols<CR>
   nnoremap <C-k>b :Telescope buffers<CR>
   nnoremap <C-K>f :Telescope find_files<CR>
   nnoremap <tab> :buffer *
@@ -176,46 +203,96 @@
     call UpdateTitleBar()
   endfunction
 
-" -Folding---------------------------------------------------------------------
-  " https://coderwall.com/p/usd_cw/a-pretty-vim-foldtext-function
-  set foldmethod=syntax
-  set foldlevelstart=99
-  "set fillchars=fold:\  
+" -Folding v1------------------------------------------------------------------
+" This function defines a custom display format for folded lines in Vim. 
+" It enhances readability by providing context about the content of each fold, 
+" including the starting and ending lines within the fold and the number of lines 
+" in the folded section.
+"
+" Function Behavior:
+" - If the fold starts with `/*` (typically indicating a comment block), 
+"   the function finds the first non-empty line within the fold and uses it 
+"   as the display text for the fold.
+" - Otherwise, it uses the first line of the fold as the starting text.
+" - Displays the number of lines folded at the end in parentheses.
+" - Handles line numbers, relative numbers, and signs by adjusting padding as needed 
+"   to ensure the fold text aligns well in the editor window.
+"
+" Process:
+" 1. Calculates padding (`lpadding`) to adjust for line numbers, relative numbers, 
+"    and signs (like error markers) in the fold column.
+" 2. Retrieves the first line of the fold (`l:start`) and replaces tabs with spaces 
+"    for a cleaner display.
+" 3. Checks if the fold starts with `/*`. If so, it searches through the fold for the 
+"    first non-empty line and uses this line as the starting display text.
+" 4. Retrieves the last line of the fold (`l:end`) and removes leading whitespace.
+" 5. Calculates the available display width (`l:width`) by subtracting padding and 
+"    the length of the fold information (number of lines).
+" 6. Truncates `l:start` if necessary to fit within the available width and combines 
+"    it with `l:end` using a separator (`…`) to indicate omitted content.
+" 7. Returns the final fold text, including padding and line count, ensuring the 
+"    display fits within the editor's window width.
+"
+" Example Output:
+" - A fold might display as:
+"   "This is the first line of the fold … last line of the fold (5)"
+"   This includes the first and last lines within the fold, separated by ellipses, 
+"   with the total number of lines in the fold shown at the end.
+"
+" Note:
+" - Ensure that 'set foldtext=FoldText()' is in your Vim configuration to enable 
+"   this custom fold display.
+" - This function is designed for use with syntax-based folding ('set foldmethod=syntax').
+function! FoldText()
 
-  set foldtext=FoldText()
-  function! FoldText()
-    let l:lpadding = &fdc
-    redir => l:signs
-    execute 'silent sign place buffer='.bufnr('%')
-    redir End
-    let l:lpadding += l:signs =~ 'id=' ? 2 : 0
+  let l:lpadding = &fdc
+  redir => l:signs
+  execute 'silent sign place buffer='.bufnr('%')
+  redir End
+  let l:lpadding += l:signs =~ 'id=' ? 2 : 0
 
-    if exists("+relativenumber")
-      if (&number)
-        let l:lpadding += max([&numberwidth, strlen(line('$'))]) + 1
-      elseif (&relativenumber)
-        let l:lpadding += max([&numberwidth, strlen(v:foldstart - line('w0')), strlen(line('w$') - v:foldstart), strlen(v:foldstart)]) + 1
-      endif
-    else
-      if (&number)
-        let l:lpadding += max([&numberwidth, strlen(line('$'))]) + 1
-      endif
+  if exists("+relativenumber")
+    if (&number)
+      let l:lpadding += max([&numberwidth, strlen(line('$'))]) + 1
+    elseif (&relativenumber)
+      let l:lpadding += max([&numberwidth, strlen(v:foldstart - line('w0')), strlen(line('w$') - v:foldstart), strlen(v:foldstart)]) + 1
     endif
-    " expand tabs
-    let l:start = substitute(getline(v:foldstart), '\t', repeat(' ', &tabstop), 'g')
-    let l:end = substitute(substitute(getline(v:foldend), '\t', repeat(' ', &tabstop), 'g'), '^\s*', '', 'g')
+  else
+    if (&number)
+      let l:lpadding += max([&numberwidth, strlen(line('$'))]) + 1
+    endif
+  endif
 
-    let l:info = ' (' . (v:foldend - v:foldstart) . ')'
-    let l:infolen = strlen(substitute(l:info, '.', 'x', 'g'))
-    let l:width = winwidth(0) - l:lpadding - l:infolen
+  " Determine fold display text based on whether fold starts with "/*"
+  let l:start = substitute(getline(v:foldstart), '\t', repeat(' ', &tabstop), 'g')
+  if l:start =~ '^\s*/\*'
+    " Loop to find the first non-empty line within the fold
+    let l:first_non_empty = ''
+    for l:i in range(v:foldstart + 1, v:foldend)
+      let l:line = substitute(getline(l:i), '\t', repeat(' ', &tabstop), 'g')
+      if l:line !~ '^\s*$'  " Check if the line is not empty
+        let l:first_non_empty = l:line
+        break
+      endif
+    endfor
+    if l:first_non_empty != ''
+      let l:start = l:first_non_empty
+    endif
+  endif
 
-    let l:separator = ' … '
-    let l:separatorlen = strlen(substitute(l:separator, '.', 'x', 'g'))
-    let l:start = strpart(l:start , 0, l:width - strlen(substitute(l:end, '.', 'x', 'g')) - l:separatorlen)
-    let l:text = l:start . ' … ' . l:end
+  " Process the end line and other settings as before
+  let l:end = substitute(substitute(getline(v:foldend), '\t', repeat(' ', &tabstop), 'g'), '^\s*', '', 'g')
+  let l:info = ' (' . (v:foldend - v:foldstart) . ')'
+  let l:infolen = strlen(substitute(l:info, '.', 'x', 'g'))
+  let l:width = winwidth(0) - l:lpadding - l:infolen
 
-    return l:text . repeat(' ', l:width - strlen(substitute(l:text, ".", "x", "g"))) . l:info
-  endfunction
+  let l:separator = ' … '
+  let l:separatorlen = strlen(substitute(l:separator, '.', 'x', 'g'))
+  let l:start = strpart(l:start , 0, l:width - strlen(substitute(l:end, '.', 'x', 'g')) - l:separatorlen)
+  let l:text = l:start . ' … ' . l:end
+
+  return l:text . repeat(' ', l:width - strlen(substitute(l:text, ".", "x", "g"))) . l:info
+endfunction
 
 " -Building--------------------------------------------------------------------
   compiler msvc
@@ -273,28 +350,40 @@
   " Rebuild
   nmap <F9> :silent call Build()<cr>
   nmap <F10> :silent call Rebuild()<cr>
-  nmap <script> <silent> <F4> :call OpenPrefixWindow()<cr>
+  nmap <script> <silent> <F4> :call ToggleQuickfix()<cr>
   
   " Quickfix
-  function! OpenPrefixWindow()
-    let currentWindow = winnr()
-    if &buftype == "quickfix"
-      "bprev
-      "wincmd w
-      wincmd q
-    else
-      copen
-      wincmd L
-     " only
-     " copen
-     " if (currentWindow == 1)
-     "   wincmd L
-     " else
-     "   wincmd H
-     " endif
+  function! ToggleQuickfix()
+    let found = 0
+    let num_splits = winnr('$')
+    for i in range(1, num_splits)
+      let bufnr = winbufnr(i)
+      if getbufvar(bufnr, '&buftype') ==# 'quickfix'
+        execute i . 'wincmd w'
+        Bdelete!
+        let found = 1
+      endif
+    endfor
+
+    if (found == 0)
+      call OpenPrefixWindow()
     endif
+
   endfunction
-  
+
+  function! OpenPrefixWindow()
+    "This function opens the Quickfix buffe on the rightmost vertical split.
+    "If there are less than 3 splis, it will create another one.
+    "If there are 3 or more, the quickfix window will replace the rightmost existing split
+    let num_splits = winnr('$')
+    if num_splits >= 3
+      execute num_splits . "wincmd w"
+      wincmd q
+    endif
+    vertical copen
+    wincmd L
+    wincmd =
+  endfunction
   au QuickFixCmdPost * :call OpenPrefixWindow()
 
 " -TODO extraction-------------------------------------------------------------
@@ -305,8 +394,17 @@
   silent command! Todo call ExtractTodo()
 
 " -Colorscheme and font--------------------------------------------------------
+  " Hide split line
+  function! OnThemeReload()
+    highlight VertSplit guibg=bg guifg=bg
+    set fillchars+=vert:\ 
+  endfunction
+
   colo simple
-  set guifont=FiraCode\ Nerd\ Font:h10
+  "set guifont=FiraCode\ Nerd\ Font:h9
+  set guifont=Fira\ Code:h9
+  autocmd ColorScheme * call OnThemeReload()
+
 
 " -Project file loading--------------------------------------------------------
   let g:project#name = ""
@@ -368,7 +466,6 @@
 
   call CheckProjectVim()
 
-
 "--Skeleton files -------------------------------------------------------------
 function! UpdateSkeletonBuffer(extension)
   "Header file
@@ -399,6 +496,24 @@ augroup skeletons
   autocmd BufNewFile project.vim execute '0r ~/.vim/templates/project.vim' | call UpdateSkeletonBuffer("<afile>:e")
 augroup END
 
+
+"--File type autocmd-----------------------------------------------------------
+
+autocmd BufEnter   Pass :Bdelete!
+
+autocmd BufEnter *.c setfiletype c
+autocmd BufEnter *.cpp setfiletype cpp
+autocmd BufEnter *.h setfiletype cpp
+autocmd BufEnter *.md setfiletype md
+autocmd BufEnter *.xml setfiletype xml
+autocmd BufEnter *.json setfiletype json
+
+autocmd BufWritePost *.c setfiletype c
+autocmd BufWritePost *.cpp setfiletype cpp
+autocmd BufWritePost *.h setfiletype cpp
+autocmd BufWritePost *.md setfiletype md
+autocmd BufWritePost *.xml setfiletype xml
+autocmd BufWritePost *.json setfiletype json
 
 let g:cmp_widget_border = 'rounded'
 "--LUA based configurations----------------------------------------------------
@@ -434,5 +549,4 @@ vim.diagnostic.config({
 })
 
 EOF
-
 " End of vimrc
