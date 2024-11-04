@@ -1,1 +1,2 @@
-GuiPopupmenu 0
+" https://github.com/marciovmf/vimstuff/ginit.vim
+
